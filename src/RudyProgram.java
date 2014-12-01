@@ -50,7 +50,7 @@ public class RudyProgram {
 	
 	private String[] programParameters;
 	
-	private InstructionList programInstructionStack;
+	private InstructionList programInstructionList;
 	
 	private String programName;
 	
@@ -86,17 +86,20 @@ public class RudyProgram {
 	
 	public void setInstructionStack(InstructionList instructions){
 		
-		this.programInstructionStack = instructions;
+		this.programInstructionList = instructions;
 		
 	}
 	
 	
 	public void executeInstructionStack(){
 		
-	
+		RudyExcecutor.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);
 		
 		
 		
 	}
+	
+	
+	
 	
 }
