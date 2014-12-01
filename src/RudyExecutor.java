@@ -1,6 +1,8 @@
 
-public class RudiExecutor {
+public class RudyExecutor {
 
+	
+	
 	
 	//checks for the string to be an Integer or not
 	@SuppressWarnings("unused")
