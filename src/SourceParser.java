@@ -121,26 +121,56 @@ public class SourceParser {
 			
 			while(currentline  == "]"){
 				
-				currentstack.add(cuurentline);
+				currentstack.add(currentline);
+				
+			}
+			
+			while(execute(while_condition)){
+				
+				execute(current_stack);
 				
 			}
 			
 		}
 		
 		
-		while(execute(while_condition)){
-			
-			execute(current_stack);
-			
-		}
+		
 		
 		
 		/*
-		 * If its an if statement, execute the if_condition and keep
+		 * If its an if statement, execute the if_condition.
+		 * Different cases with if_condition:
+		 * 1. if true, execute entire block and skip all else.
+		 * 2. if false, go to the next else  
+		 * 		2.1  
+		 * 
 		 * 
 		 */
 		
-		
+		if(currenLine == ifline){
+			
+			if_condition = "";
+			
+			if_true = execute(if_condition);
+			
+			while (curerntline == "["){
+				
+				
+				currentine = br.readLine();
+				
+				if(if_true){
+				
+					execute (currentline);
+				}
+			}
+			
+			if (currentline = elseline)
+			
+			
+			
+			
+			
+		}
 		
 		
 	}
