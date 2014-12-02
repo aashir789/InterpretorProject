@@ -70,6 +70,10 @@ public class RudiProgram {
 		this.programName = name;
 	}
 	
+	public String getName(){
+		return this.programName;
+	}
+	
 	public void setLocalMaps(HashMap<String,String> localTypeMap, HashMap<String,String> localValueMap){
 		
 		this.localVariableTypes = localTypeMap;
@@ -84,14 +88,21 @@ public class RudiProgram {
 		
 	}
 	
-	public void setInstructionStack(InstructionList instructions){
+	public void setInstructionList(InstructionList instructions){
 		
 		this.programInstructionList = instructions;
 		
 	}
 	
+	public void addToInstructionList(String instr){
+		
+		this.programInstructionList.instruction = instr;
+		this.programInstructionList.currentInstruction = this.programInstructionList.currentInstruction.next;
+		
+	}
 	
-	public void executeInstructionStack(){
+	
+	public void executeInstructionList(){
 		
 		RudiExcecutor.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);
 		

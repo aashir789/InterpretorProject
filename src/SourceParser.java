@@ -82,7 +82,8 @@ public class SourceParser {
 			lineNo++;
 
 			// remove comments
-
+			// append lines with &
+			
 			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
 
 			currentLine = currentLine.replaceAll(regex, "");
@@ -130,10 +131,8 @@ public class SourceParser {
 			throws IOException {
 
 		// Local Variables
-		RudiProgram prog; 
-		
-		
-		
+		RudiProgram prog;
+
 		// check if the program name already occurs in the map
 		if (this.subroutines.get(programName) == null) {
 			prog = new RudiProgram(programName, params);
@@ -151,6 +150,7 @@ public class SourceParser {
 			lineNo++;
 
 			// remove comments
+			// append lines with &
 
 			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
 			currentLine = currentLine.replaceAll(regex, "");
@@ -163,28 +163,62 @@ public class SourceParser {
 
 				// open brackets on new line
 				mapVariables(prog);
-				
-				
-				
-				
+				continue;
+
 			} else if (currentLine.equalsIgnoreCase("begin")) {
+
+				linkInstructions(prog);
+			} else {
+
+				// Error in syntax
+				System.out.println("Syntax Error on line " + lineNo);
 
 			}
 
 		}
 
 	}
-	
-	
-	public void mapVariables(RudiProgram prog){
-		
-		
-		
-		
+
+	public void mapVariables(RudiProgram prog) {
+
 	}
-	
-	
-	
+
+	public void linkInstructions(RudiProgram prog) throws IOException{
+		
+		currentLine = br.readLine();
+		lineNo++;
+		
+		
+		
+		
+		while((currentLine=br.readLine())!= null ){
+			
+			lineNo++;
+
+			// remove comments
+			// append lines with &
+			
+			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
+			currentLine = currentLine.replaceAll(regex, "");
+			
+			if(currentLine.equalsIgnoreCase("")){
+				continue;
+			}
+			
+			
+			// check if the subroutine has ended
+			if( (prog.getName().equalsIgnoreCase("program") && currentLine.equalsIgnoreCase("end")) 
+											|| currentLine.equalsIgnoreCase("return")){
+				break;
+			}
+			else{
+				
+				
+			}
+			
+		}
+			
+	}
 
 	public static void main(String[] args) throws IOException {
 
