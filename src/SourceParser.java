@@ -22,17 +22,7 @@ import javax.xml.transform.Source;
 
 public class SourceParser {
 
-	/*
-	 * Types of lines when parsed:
-	 * 
-	 * 1. Can be directly executed 2. Is a continuation denoted by & symbol 3.
-	 * Can be a control structure (while or if) 4. Program start/end 5.
-	 * Subroutine start/end
-	 * 
-	 * If it is while, keep parsing executeable lines in a stack/list till the
-	 * end block is encountered
-	 */
-
+	
 	// /////////////////////////////////////////////////////////////////
 	// Class fields
 	// /////////////////////////////////////////////////////////////////
@@ -47,13 +37,18 @@ public class SourceParser {
 	private String currentLine;
 
 	private int lineNo;
+	
+	
+	///////////////////////////////////////////////////////////////////
+	// Public Methods
+	//////////////////////////////////////////////////////////////////
 
 	public SourceParser(String filename) {
 
 		// check if the file name has .rudi extension
 
 		String[] extensions = filename.split("\\.");
-		if (extensions[extensions.length - 1].equals("rudi")) {
+		if (extensions[extensions.length - 1].equals("rud")) {
 			this.sourceFile = filename;
 		}
 
@@ -118,7 +113,6 @@ public class SourceParser {
 				} else {
 					// Syntax error in defining subroutine
 				}
-
 			}
 
 			// now the current line has no spaces and string literals are intact
@@ -127,7 +121,13 @@ public class SourceParser {
 
 	}
 
-	public void initProgram(String programName, String[] params)
+
+	
+	///////////////////////////////////////////////////////////////////
+	// Private Methods
+	///////////////////////////////////////////////////////////////////
+	
+	private void initProgram(String programName, String[] params)
 			throws IOException {
 
 		// Local Variables
@@ -179,10 +179,14 @@ public class SourceParser {
 
 	}
 
-	public void mapVariables(RudiProgram prog) throws IOException {
+	private void mapVariables(RudiProgram prog) throws IOException {
 
 		// the first line has to be [
-		
+		if(!   (currentLine = br.readLine()).equals("[") ){
+			// Syntax error
+			System.out.println("Syntax Error in declaring variables");
+			return;
+		}
 		
 		while ((currentLine = br.readLine()) != null) {
 
@@ -245,7 +249,7 @@ public class SourceParser {
 
 	}
 
-	public void linkInstructions(RudiProgram prog) throws IOException {
+	private void linkInstructions(RudiProgram prog) throws IOException {
 
 		while ((currentLine = br.readLine()) != null) {
 
@@ -261,6 +265,9 @@ public class SourceParser {
 				continue;
 			}
 
+			
+			// check for if-else and while statements and modify them too
+			
 			// check if the subroutine has ended
 			if ((prog.getName().equalsIgnoreCase("program") && currentLine
 					.equalsIgnoreCase("end"))
@@ -276,6 +283,12 @@ public class SourceParser {
 
 	}
 
+
+	
+	///////////////////////////////////////////////////////////////////
+	// Main function to test the class
+	///////////////////////////////////////////////////////////////////
+	
 	public static void main(String[] args) throws IOException {
 
 		SourceParser sp = new SourceParser("factorial.rudi");
