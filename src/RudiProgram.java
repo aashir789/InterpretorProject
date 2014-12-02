@@ -93,7 +93,7 @@ public class RudiProgram {
 	
 	public void executeInstructionStack(){
 		
-		RudyExcecutor.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);
+		RudiExcecutor.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);
 		
 	}
 	

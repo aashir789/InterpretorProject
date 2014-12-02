@@ -1,5 +1,6 @@
 
-subroutine foo(c, d)
+
+subroutinefoo(c,d)
 decs
 [
 int c 
