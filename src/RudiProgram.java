@@ -21,7 +21,7 @@ import java.util.HashMap;
 
 
 
-public class RudyProgram {
+public class RudiProgram {
 
 	
 	//////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ public class RudyProgram {
 	 * function. 
 	 * 	
 	 */
-	public RudyProgram(String name, String[] params){
+	public RudiProgram(String name, String[] params){
 		this.programParameters = params;
 		this.programName = name;
 	}
@@ -94,8 +94,6 @@ public class RudyProgram {
 	public void executeInstructionStack(){
 		
 		RudyExcecutor.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);
-		
-		
 		
 	}
 	

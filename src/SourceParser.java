@@ -17,6 +17,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.Source;
 
@@ -38,141 +40,126 @@ public class SourceParser {
 	 * 
 	 */
 	
-	 
-	/* Class fields */
-	
-	/*
-	 * This holds the list of instructions to be executed as a part of
-	 * a subroutine or a control structure (while/if else) 
-	 */
-	private ArrayList<String> currentStack; 
-	
-	/*
-	 * Map containing name-type pair of local variables 
-	 */
-	private HashMap<String, String> currentVariables;
-	
-	/*
-	 * Map containing name-type pair of global variables
-	 */
-	private HashMap<String, String> globalVariables;
- 	
-	/*
-	 * Map containing name-value pair of local variables 
-	 */
-	private HashMap<String, String> currentVariableValues;
-	
-	/*
-	 * Map containing name-value pair of global variables
-	 */
-	private HashMap<String, String> globalVariableValues;
+	/////////////////////////////////////////////////////////////////// 
+	// Class fields
+	///////////////////////////////////////////////////////////////////
 	
 	/* Name of the sourcefile */
 	private String sourceFile;
+	
+	private HashMap<String,RudiProgram> subroutines;
 	
 	private BufferedReader br;
 	
 	private String currentLine;
 	
-	private boolean saveFlag =false;
-	
-	
-	
-	
-	
+	private int lineNo;
 	
 	public SourceParser(String filename){
-		this.sourceFile = filename;
+		
+		// check if the file name has .rudi extension
+		
+		String[] extensions = filename.split("\\.");
+		if(extensions[extensions.length-1].equals("rudi") ){
+			this.sourceFile = filename;
+		}
+		
+		else {
+			
+			System.out.println("ERROR: Input file not a Rudi file");
+			
+		}
+		
 	}
 	
 	
 	public void init() throws FileNotFoundException{
 		
+		
 		br = new BufferedReader(new FileReader(this.sourceFile));
 		
 	}
 	
+	/*
+	 *	 
+	 */
 	public void readFromFile() throws IOException{
 		
-		currentLine = br.readLine();
+		while((currentLine = br.readLine()) != null){
+			
+			lineNo++;
+			
+			
+			// remove comments
+			
+			
+			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
+			
+			currentLine = currentLine.replaceAll(regex, "");
+			
+			if(currentLine.equalsIgnoreCase("")){
+				continue;
+			}
+			else{
+				if(currentLine.equalsIgnoreCase("program")){
+					
+					initProgram("program", null);
+					
+				}
+				// check if the line is defining a subroutine
+				else if(currentLine.toLowerCase().startsWith("subroutine")){
+					
+					
+					initProgram(subroutineName, params);
+					
+				}
+				else{
+					// Syntax error in defining subroutine
+				}
+				
+				
+			}
+			
+			// now the current line has no spaces and string literals are intact
+			
+			
+			
+			
+			
+		}
 		
-		categorize(currentLine);
 		
 		
 	}
 	
-	public void categorize(String line){
 		
-		/*	If its a subroutine, make a program object and
-		 *  and add its local variables, stack of instructions
-		 *  and finally add it the global variable maps
-		 */
+	public void initProgram(String programName, String[] params){
+	
+		// check if the program name already occurs in the map
 		
-		
-		/*
-		 * If its a while statement, save the block in current stack 
-		 * and while the while_condition is true, execute the currentstack 
-		 * 
-		 */
-		
-		if(currenLine == whileline){
-			
-			while_condiiton= "";
-			
-			while(currentline  == "]"){
-				
-				currentstack.add(currentline);
-				
-			}
-			
-			while(execute(while_condition)){
-				
-				execute(current_stack);
-				
-			}
-			
-		}
+		RudiProgram prog = new RudiProgram(programName, params);
+		this.subroutines.put(programName, prog);
 		
 		
 		
-		
-		
-		/*
-		 * If its an if statement, execute the if_condition.
-		 * Different cases with if_condition:
-		 * 1. if true, execute entire block and skip all else.
-		 * 2. if false, go to the next else  
-		 * 		2.1  
-		 * 
-		 * 
-		 */
-		
-		if(currenLine == ifline){
-			
-			if_condition = "";
-			
-			if_true = execute(if_condition);
-			
-			while (curerntline == "["){
-				
-				
-				currentine = br.readLine();
-				
-				if(if_true){
-				
-					execute (currentline);
-				}
-			}
-			
-			if (currentline = elseline)
-			
-			
-			
-			
-			
-		}
+		// initilaize all program variables and instruction list
 		
 		
 	}
+	
+	
+	
+	public static void main(String[] args) throws IOException{
+		
+		SourceParser sp = new SourceParser("factorial.rudi");
+		
+		sp.init();
+		sp.readFromFile();
+		
+	}
+	
+	
+	
+	
 	
 }

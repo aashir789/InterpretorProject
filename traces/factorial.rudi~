@@ -1,0 +1,37 @@
+/* Factorial Calculator */
+program
+decs
+	integer
+	integer
+	integer
+
+fact
+x
+n
+/* factorial result
+/* intermediate factorial value
+/* input factorial term
+*/
+*/
+*/
+begin
+print “Enter the factorial term:”
+input n
+if ( n :eq: 0 )
+[
+fact = 1
+]
+else
+[
+x = 1
+fact = 1
+while (n :le: x)
+[
+x = x + 1
+fact = fact * x
+]
+]
+print n
+print “! = “
+print fact
+end
