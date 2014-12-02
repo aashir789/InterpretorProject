@@ -29,11 +29,28 @@ public class InstructionList {
 	InstructionNode listHead;
 	InstructionNode listTail;
 	
-	
+	/////////////////////////////////////////////////////
+	// Public Methods
+	/////////////////////////////////////////////////////
+
 	
 	public void addInstruction(String instr, int lineno){
 		
+		if(this.listHead == null){
+			this.listHead = new InstructionNode();
+			this.listHead.instruction = instr;
+			this.listHead.lineNo = lineno;
+			
+			this.listTail = this.listHead;
+			this.listTail.nextInstruction = null;
+			return;
+		}
 		
+		this.listTail.nextInstruction = new InstructionNode();
+		this.listTail = this.listTail.nextInstruction;
+		this.listTail.instruction = instr;
+		this.listTail.lineNo = lineno;
+		this.listTail.nextInstruction = null;
 		
 	}
 	
