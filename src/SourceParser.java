@@ -83,7 +83,7 @@ public class SourceParser {
 
 			// remove comments
 			// append lines with &
-			
+
 			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
 
 			currentLine = currentLine.replaceAll(regex, "");
@@ -179,45 +179,101 @@ public class SourceParser {
 
 	}
 
-	public void mapVariables(RudiProgram prog) {
+	public void mapVariables(RudiProgram prog) throws IOException {
 
-	}
+		// the first line has to be [
+		
+		
+		while ((currentLine = br.readLine()) != null) {
 
-	public void linkInstructions(RudiProgram prog) throws IOException{
-		
-		currentLine = br.readLine();
-		lineNo++;
-		
-		
-		
-		
-		while((currentLine=br.readLine())!= null ){
-			
 			lineNo++;
 
 			// remove comments
 			// append lines with &
-			
+
 			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
 			currentLine = currentLine.replaceAll(regex, "");
-			
-			if(currentLine.equalsIgnoreCase("")){
+			if (currentLine.equalsIgnoreCase("")) {
 				continue;
 			}
 			
 			
-			// check if the subroutine has ended
-			if( (prog.getName().equalsIgnoreCase("program") && currentLine.equalsIgnoreCase("end")) 
-											|| currentLine.equalsIgnoreCase("return")){
+			// check if the decs block has ended
+			if(currentLine.equals("]")){
 				break;
 			}
-			else{
+			
+			// check for the three possible types
+			if(currentLine.toLowerCase().startsWith("string")){
+				currentLine = currentLine.substring(6);
 				
+				if(prog.isUniqueVariable(currentLine.toLowerCase())){
+					prog.addToTypeMap(currentLine.toLowerCase(),"string");
+				}
+				else{
+					// throw variable already defined error
+				}
+				
+			}
+			else if(currentLine.toLowerCase().startsWith("integer")){
+				currentLine = currentLine.substring(7);
+				
+				if(prog.isUniqueVariable(currentLine.toLowerCase())){
+					prog.addToTypeMap(currentLine.toLowerCase(),"integer");
+				}
+				else{
+					// throw variable already defined error
+				}
+			} 
+			else if(currentLine.toLowerCase().startsWith("float")){
+				currentLine = currentLine.substring(5);
+				
+				if(prog.isUniqueVariable(currentLine.toLowerCase())){
+					prog.addToTypeMap(currentLine.toLowerCase(),"float");
+				}
+				else{
+					// throw variable already defined error
+				}
+			}
+			else{
+				// syntax error undefined type
 				
 			}
 			
+
 		}
-			
+
+	}
+
+	public void linkInstructions(RudiProgram prog) throws IOException {
+
+		while ((currentLine = br.readLine()) != null) {
+
+			lineNo++;
+
+			// remove comments
+			// append lines with &
+
+			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
+			currentLine = currentLine.replaceAll(regex, "");
+
+			if (currentLine.equalsIgnoreCase("")) {
+				continue;
+			}
+
+			// check if the subroutine has ended
+			if ((prog.getName().equalsIgnoreCase("program") && currentLine
+					.equalsIgnoreCase("end"))
+					|| currentLine.equalsIgnoreCase("return")) {
+				break;
+			} else {
+
+				prog.addToInstructionList(currentLine, lineNo);
+
+			}
+
+		}
+
 	}
 
 	public static void main(String[] args) throws IOException {

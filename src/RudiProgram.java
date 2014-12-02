@@ -94,13 +94,26 @@ public class RudiProgram {
 		
 	}
 	
-	public void addToInstructionList(String instr){
+	public void addToInstructionList(String instr, int lineno){
 		
-		this.programInstructionList.instruction = instr;
-		this.programInstructionList.currentInstruction = this.programInstructionList.currentInstruction.next;
+		this.programInstructionList.addInstruction(instr, lineno);
 		
 	}
 	
+	public boolean isUniqueVariable(String var){
+		
+		if(this.localVariableTypes.get(var)!= null ){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	
+	public void addToTypeMap(String name,String type){
+		this.localVariableTypes.put(name, type);
+	}
 	
 	public void executeInstructionList(){
 		
