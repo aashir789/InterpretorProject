@@ -75,13 +75,13 @@ public class SourceParser {
 		while ((currentLine = br.readLine()) != null) {
 
 			lineNo++;
-
-			// remove comments
-			// append lines with &
-
 			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
-
 			currentLine = currentLine.replaceAll(regex, "");
+
+			// Remove comments
+			currentLine = currentLine.replaceAll("//\\*.*?\\*//", "");
+			
+			// append lines with &
 
 			if (currentLine.equalsIgnoreCase("")) {
 				continue;
@@ -149,15 +149,18 @@ public class SourceParser {
 
 			lineNo++;
 
-			// remove comments
-			// append lines with &
-
 			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
 			currentLine = currentLine.replaceAll(regex, "");
-
 			if (currentLine.equalsIgnoreCase("")) {
 				continue;
 			}
+			
+			// Remove comments
+			currentLine = currentLine.replaceAll("//\\*.*?\\*//", "");
+						
+			// append lines with &
+
+			
 
 			if (currentLine.equalsIgnoreCase("decs")) {
 
@@ -181,31 +184,49 @@ public class SourceParser {
 
 	private void mapVariables(RudiProgram prog) throws IOException {
 
-		// the first line has to be [
-		if(!   (currentLine = br.readLine()).equals("[") ){
-			// Syntax error
-			System.out.println("Syntax Error in declaring variables");
-			return;
-		}
+		// Local Variables
+		boolean decsOpened = false;
 		
 		while ((currentLine = br.readLine()) != null) {
 
 			lineNo++;
 
-			// remove comments
-			// append lines with &
-
+			// Remove white spaces
 			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
 			currentLine = currentLine.replaceAll(regex, "");
+			
+			// Remove comments
+			currentLine = currentLine.replaceAll("//\\*.*?\\*//", "");
+			
+			// append lines with &
+
 			if (currentLine.equalsIgnoreCase("")) {
 				continue;
 			}
+			
+			
+			// check if the first character is [
+			
+			if(!decsOpened){
+				
+				if( (currentLine = br.readLine()).equals("[") ){
+					lineNo++;
+					decsOpened = true;
+				}
+				else{
+					// Syntax error
+					System.out.println("Syntax Error in declaring variables");
+					return;
+				}
+			}
+			
 			
 			
 			// check if the decs block has ended
 			if(currentLine.equals("]")){
 				break;
 			}
+			
 			
 			// check for the three possible types
 			if(currentLine.toLowerCase().startsWith("string")){
@@ -255,12 +276,16 @@ public class SourceParser {
 
 			lineNo++;
 
-			// remove comments
-			// append lines with &
-
+			
 			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
 			currentLine = currentLine.replaceAll(regex, "");
+			
+			// Remove comments
+			currentLine = currentLine.replaceAll("//\\*.*?\\*//", "");
+			
+			// append lines with &
 
+			
 			if (currentLine.equalsIgnoreCase("")) {
 				continue;
 			}
@@ -283,7 +308,8 @@ public class SourceParser {
 
 	}
 
-
+	
+	
 	
 	///////////////////////////////////////////////////////////////////
 	// Main function to test the class
@@ -291,7 +317,7 @@ public class SourceParser {
 	
 	public static void main(String[] args) throws IOException {
 
-		SourceParser sp = new SourceParser("factorial.rudi");
+		SourceParser sp = new SourceParser("factorial.rud");
 
 		sp.init();
 		sp.readFromFile();
