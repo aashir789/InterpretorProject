@@ -1,3 +1,5 @@
+import com.sun.xml.internal.ws.api.pipe.NextAction;
+
 /*
  * InstructionList.java
  * 
@@ -24,12 +26,22 @@ public class InstructionList {
 		public int lineNo;
 	}
 	
-	InstructionNode listHead = new InstructionNode();
+	InstructionNode listHead;
+	InstructionNode listTail;
 	
 	
 	
+	public void addInstruction(String instr, int lineno){
+		
+		
+		
+	}
 	
-	
+	public void removeInstruction(String instr, int lineno){
+		
+		
+		
+	}
 	
 	
 }
