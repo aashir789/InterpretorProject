@@ -9,14 +9,14 @@ public class RudiExecutor {
 
 	public String execute(Map<String, String> localVariableTypes,
 			Map<String, String> localVariableValues,
-		InstructionList.InstructionNode head) {
+		InstructionList inList) {
 		localVarTypes=localVariableTypes;
 		localVarValues=localVariableValues;
 	
 			String vals[],choice;
 			boolean bool=false;
 		
-			InstructionList.InstructionNode instrList=head;
+			InstructionList.InstructionNode instrList=inList.listHead;
 			while(instrList!=null) {
 			
 			String s=instrList.instruction;
@@ -57,7 +57,7 @@ public class RudiExecutor {
 			
 			case "Logic":
 				s=PlaceVariableValues(s,localVariableTypes,localVariableValues);
-				boolean result= EvaluateLogicalExpression(s);
+				String result= EvaluateLogicalExpression(s);
 				break;
 			
 			
@@ -146,11 +146,15 @@ public class RudiExecutor {
 	
 	
 	
-	private boolean EvaluateLogicalExpression(String s) {
-		
+	private String EvaluateLogicalExpression(String s) {
 		float val = 0;
 		int index=0;
 		
+		
+		
+		
+		
+		return "false";
 	}
 
 	// 1-2+3*4/6
@@ -183,7 +187,8 @@ private static float EvaluateExpression(String s) {
 		float val = 0;
 		int index=0;
 		
-		if(RudiExecutor.localVarTypes.containsKey(s) && RudiExecutor.localVarTypes.get(s).equalsIgnoreCase("float") || RudiExecutor.localVarTypes.get(s).equalsIgnoreCase("int")) 
+		if(RudiExecutor.localVarTypes.containsKey(s))
+			if((RudiExecutor.localVarTypes.get(s).equalsIgnoreCase("float") || RudiExecutor.localVarTypes.get(s).equalsIgnoreCase("int"))) 
 			return Float.parseFloat(localVarValues.get(s));
 			
 			if ((index = (findIndex(s, '-'))) >= 0) {
