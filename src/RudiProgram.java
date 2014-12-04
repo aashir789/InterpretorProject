@@ -117,7 +117,7 @@ public class RudiProgram {
 	
 	public void executeInstructionList(){
 		
-		RudiExcecutor.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);
+	//	RudiExcecutor.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);
 		
 	}
 	

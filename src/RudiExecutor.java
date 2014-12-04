@@ -1,17 +1,27 @@
-import java.util.ArrayList;
+import java.io.InputStreamReader;
 import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.Scanner;
 
 public class RudiExecutor {
+	private static Map<String, String> localVarTypes;
+	private static Map<String, String> localVarValues;
+	
 
 	public String execute(Map<String, String> localVariableTypes,
 			Map<String, String> localVariableValues,
-			ArrayList<String> programInstructionList) {
-		String vals[];
-		boolean bool=false;
-		for (String s : programInstructionList) {
+		InstructionList.InstructionNode head) {
+		localVarTypes=localVariableTypes;
+		localVarValues=localVariableValues;
+	
+			String vals[],choice;
+			boolean bool=false;
 		
-			switch (s) {
+			InstructionList.InstructionNode instrList=head;
+			while(instrList!=null) {
+			
+			String s=instrList.instruction;
+			choice=getChoice(instrList.instruction);
+			switch (choice) {
 			/*
 			 * keywords
 			 * 
@@ -25,55 +35,121 @@ public class RudiExecutor {
 			 * 
 			 * while(Boolean)[...]
 			 */
+			 
+			// Boolean ^,|,~
+			
+			
 			/*
 			 * Arithmetic =,+,-,/,*
 			 */
 			
-			case "-":
-			case "+":
-			case "*":
-			case "/":
-				s=PlaceVariableValues(s);
-				float answer = EvaluateExpression(s);
+			case "Arith":
+				String parts[]=s.split("=");				
+				//parts[1]=PlaceVariableValues(parts[1], localVariableTypes, localVariableValues);
+				float answer = EvaluateExpression(parts[1]);
+				AssignAnswer(answer,localVariableTypes,localVariableValues,parts[0]);
 				break;	
-		  
-			case ":eq:":
-			case ":ne:":
-			case ":gt:":
-			case ":lt:":
-			case ":ge:":
-			case ":le:":
-				s=PlaceVariableValues(s);
+			
+				
+				/*
+				 * Comparison :eq:,:ne:,:gt:,:lt:,:ge:,:le:
+				 */ 	
+			
+			case "Logic":
+				s=PlaceVariableValues(s,localVariableTypes,localVariableValues);
 				boolean result= EvaluateLogicalExpression(s);
 				break;
-			}
-
-			/*
-			 * Comparison :eq:,:ne:,:gt:,:lt:,:ge:,:le:
-			 * 
-			 * Boolean ^,|,~
-			 * 
-			 * Comments /
-			 * 
-			 * print" "
-			 * 
-			 * print cr
-			 * 
-			 * print variable
-			 * 
-			 * input variable
-			 */
-			//case "input ":
+			
+			
 				
-					
+				/* 
+				 * input variable
+				 */	
+			case "input":
+				s=s.substring(5);
+				AcceptUserInput(s,localVariableTypes,localVariableValues);
+				break;
+				
+				
+				
+			case  "print":
+				s =	s.substring(5);
+				if (s.equalsIgnoreCase("cr"))
+					System.out.println("\n");
+					else if(s.charAt(0)=='\"')
+					System.out.println(s.substring(1, s.indexOf("\"")));
+					else
+					if(localVariableValues.containsKey(s))
+					System.out.println(localVariableValues.get(s));
+					break;	
+			}
+					instrList=instrList.nextInstruction;
 		}
 		return null;
 	}
 
-	private boolean EvaluateLogicalExpression(String s) {
-		return false;
+	
+	
+	
+	private void AcceptUserInput(String string, Map<String, String> localVariableTypes, Map<String, String> localVariableValues) {
 		// TODO Auto-generated method stub
+			String type=localVariableTypes.get(string);
+			Scanner in=new Scanner(new InputStreamReader(System.in));
+			String val=in.nextLine();
 		
+			if(type.equalsIgnoreCase("int"))
+				if(checkInt(val))
+					localVariableValues.put(string, val);
+				else
+					System.out.println("Error Data cannot be cast to operand type");
+			if(type.equalsIgnoreCase("float"))
+				if(checkFloat(val))
+					localVariableValues.put(string, val);
+				else
+					System.out.println("Error Data cannot be cast to operand type");
+			if(type.equalsIgnoreCase("string"))
+					localVariableValues.put(string, val);
+	}
+
+	
+	
+	private String getChoice(String s) 
+	{	
+			// TODO Auto-generated method stub
+		if(s.contains("+")|| s.contains("-") || s.contains("/") || s.contains("*"))
+			return "Arith";//All Arithmetic operations grouped in one case:
+		if((s.contains(":le:"))||(s.contains(":ge:"))||(s.contains(":lt:"))
+			||(s.contains(":gt:"))||(s.contains(":ne:")) || (s.contains(":eq:")))
+		    return "Logic";	//All Boolean and Logical Operations together 	
+		if(s.contains("print"))
+			return "print"; //All Print Operations
+		if(s.contains("input"))
+			return "input";		//All User Inputs///
+		return null;
+	}
+
+	
+	private void AssignAnswer(float answer, Map<String, String> localVariableTypes, Map<String, String> localVariableValues,String s) {
+		// TODO Auto-generated method stub
+	if(localVariableTypes.get(s)==null)
+		System.out.println("Data Assigned to invalid operand");	
+	if(localVariableValues.get(s)==null)
+		System.out.println("Data Assigned to invalid operand");	
+			if(localVariableTypes.get(s).equalsIgnoreCase("float"))
+				localVariableValues.put(s, (answer+""));
+			if(localVariableTypes.get(s).equalsIgnoreCase("int")){
+				int ans=(int)answer;
+				localVariableValues.put(s,(ans+""));
+		}
+ }
+
+	
+	
+	
+	private boolean EvaluateLogicalExpression(String s) {
+		
+		float val = 0;
+		int index=0;
 		
 	}
 
@@ -104,11 +180,12 @@ public class RudiExecutor {
 private static float EvaluateExpression(String s) {
 	
 	// TODO Auto-generated method stub
-		s=PlaceVariableValues(s);
 		float val = 0;
 		int index=0;
-		//String parts[];	
 		
+		if(RudiExecutor.localVarTypes.containsKey(s) && RudiExecutor.localVarTypes.get(s).equalsIgnoreCase("float") || RudiExecutor.localVarTypes.get(s).equalsIgnoreCase("int")) 
+			return Float.parseFloat(localVarValues.get(s));
+			
 			if ((index = (findIndex(s, '-'))) >= 0) {
 					return (EvaluateExpression(s.substring(0,index))
 							- EvaluateExpression(s.substring(index+1, s.length())));
@@ -121,21 +198,11 @@ private static float EvaluateExpression(String s) {
 						return (EvaluateExpression(s.substring(0,index))
 								* EvaluateExpression(s.substring(index+1, s.length())));
 					} else
-						if ((index = (findIndex(s, '/'))) >= 0) {
+						if ((index = (findIndex(s, '/'))) >= 0 && EvaluateExpression(s.substring(index+1, s.length()))>0f) {
 							return (EvaluateExpression(s.substring(0,index))
 									/ EvaluateExpression(s.substring(index+1, s.length())));
-						} /*
-						
-						else {
-			
-							//Add map details here
-							return Float.parseFloat(s);
 						}
-				//}
-		//	}
-	//	}
-			
-*/			
+	
 			if (s.charAt(0) == '(')
 			  {
 			    if (s.charAt(s.length()-1) == ')')
@@ -151,18 +218,25 @@ private static float EvaluateExpression(String s) {
 			    //throw new ParserException("String to number parsing exception: " + s);
 			  }	
 		return val;
-	}
+		}
 
-	
-	
-	
-	
-	private static String PlaceVariableValues(String s) {
+
+
+	private static String PlaceVariableValues(String s, Map<String, String> localVariableTypes, Map<String, String> localVariableValues) {
 	// TODO Auto-generated method stub
-	String valSplit[]=s.split(" ");
-	for(String ch:valSplit){
-						}		
-return "";
+
+		String valSplit[]=s.split("");
+		String type,value;	
+		
+		for(String ch:valSplit){
+		if(localVariableTypes.containsKey(ch)){
+			type=localVariableTypes.get(ch);
+			value=localVariableValues.get(ch);
+			s.replace(ch, value);
+		}
+	}		
+
+	return s;
 	}
 
 	// checks for the string to be an Integer or not
@@ -170,9 +244,7 @@ return "";
 	private boolean checkInt(String s) {
 
 		try {
-
 			Integer.parseInt(s);
-
 		} catch (NumberFormatException e) {
 			return false;
 		}
@@ -184,7 +256,6 @@ return "";
 	private boolean checkFloat(String s) {
 
 		try {
-
 			Float.parseFloat(s);
 
 		} catch (NumberFormatException e) {
@@ -194,6 +265,7 @@ return "";
 	}
 
 	// Checks if entered string is either integer or float.
+	
 	@SuppressWarnings("unused")
 	private boolean checkIntegerOrFloat(String s) {
 		if (checkFloat(s)) {
@@ -205,28 +277,8 @@ return "";
 			return false;
 	}
 
-	private boolean assignment(String s) {
-		if (s.contains("=")) {
-			String parts[] = s.split("=");
-			// checkMap()
 
-			return true;
-
-		} else
-			return false;
-	}
-
-	private boolean add(String s) {
-		if (s.contains("+")) {
-			String parts[] = s.split("+");
-			//
-			// checkValues(s[0]);
-			return true;
-
-		} else
-			return false;
-	}
-
+	
 	public static void main(String args[]) {
 		String s = "(1-2)+3*(4/8)";
 		Float result = 0f;

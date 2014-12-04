@@ -2,7 +2,5 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/aashir789/Documents/CMU/Fall 14/17-630/InterpretorProject/jtopas/build/1.4/lib/jtopas.jar"/>
-	<classpathentry kind="lib" path="/home/aashir789/Documents/CMU/Fall 14/17-630/InterpretorProject/jtopas/build/1.4/lib/jtopas-jt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
