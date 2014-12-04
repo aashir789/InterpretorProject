@@ -121,7 +121,12 @@ public class SourceParser {
 
 	}
 
-
+	
+	public void runProgram(){
+		
+		this.subroutines.get("program").executeInstructionList();
+		
+	}
 	
 	///////////////////////////////////////////////////////////////////
 	// Private Methods
@@ -309,18 +314,17 @@ public class SourceParser {
 	}
 
 	
-	
-	
 	///////////////////////////////////////////////////////////////////
 	// Main function to test the class
 	///////////////////////////////////////////////////////////////////
 	
 	public static void main(String[] args) throws IOException {
 
-		SourceParser sp = new SourceParser("factorial.rud");
+		SourceParser sp = new SourceParser("helloworld.rud");
 
 		sp.init();
 		sp.readFromFile();
+		sp.runProgram();
 
 	}
 
