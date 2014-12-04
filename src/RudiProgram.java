@@ -68,6 +68,12 @@ public class RudiProgram {
 	public RudiProgram(String name, String[] params){
 		this.programParameters = params;
 		this.programName = name;
+		this.programInstructionList = new InstructionList();
+		this.globalVariableTypes = new HashMap<String, String>();
+		this.globalVariableValues = new HashMap<String, String>();
+		this.localVariableTypes = new HashMap<String, String>();
+		this.localVariableValues = new HashMap<String, String>();
+		
 	}
 	
 	public String getName(){
@@ -116,8 +122,9 @@ public class RudiProgram {
 	}
 	
 	public void executeInstructionList(){
-		
-	//	RudiExcecutor.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);
+	
+		RudiExecutor rd=new RudiExecutor();
+		String s=rd.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);
 		
 	}
 	

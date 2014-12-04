@@ -6,6 +6,10 @@ public class RudiExecutor {
 	private static Map<String, String> localVarTypes;
 	private static Map<String, String> localVarValues;
 	
+	
+	public RudiExecutor() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public String execute(Map<String, String> localVariableTypes,
 			Map<String, String> localVariableValues,
@@ -149,12 +153,13 @@ public class RudiExecutor {
 	private String EvaluateLogicalExpression(String s) {
 		float val = 0;
 		int index=0;
-		
+
 		
 		
 		
 		
 		return "false";
+
 	}
 
 	// 1-2+3*4/6
