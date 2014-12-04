@@ -79,7 +79,7 @@ public class SourceParser {
 			currentLine = currentLine.replaceAll(regex, "");
 
 			// Remove comments
-			currentLine = currentLine.replaceAll("//\\*.*?\\*//", "");
+			currentLine = currentLine.replaceAll("/\\*+\\s*(.*?)\\*+/", "");
 			
 			// append lines with &
 
@@ -161,7 +161,7 @@ public class SourceParser {
 			}
 			
 			// Remove comments
-			currentLine = currentLine.replaceAll("//\\*.*?\\*//", "");
+			currentLine = currentLine.replaceAll("/\\*+\\s*(.*?)\\*+/", "");
 						
 			// append lines with &
 
@@ -201,7 +201,7 @@ public class SourceParser {
 			currentLine = currentLine.replaceAll(regex, "");
 			
 			// Remove comments
-			currentLine = currentLine.replaceAll("//\\*.*?\\*//", "");
+			currentLine = currentLine.replaceAll("/\\*+\\s*(.*?)\\*+/", "");
 			
 			// append lines with &
 
@@ -214,9 +214,10 @@ public class SourceParser {
 			
 			if(!decsOpened){
 				
-				if( (currentLine = br.readLine()).equals("[") ){
+				if( currentLine.equals("[") ){
 					lineNo++;
 					decsOpened = true;
+					continue;
 				}
 				else{
 					// Syntax error
@@ -286,7 +287,7 @@ public class SourceParser {
 			currentLine = currentLine.replaceAll(regex, "");
 			
 			// Remove comments
-			currentLine = currentLine.replaceAll("//\\*.*?\\*//", "");
+			currentLine = currentLine.replaceAll("/\\*+\\s*(.*?)\\*+/", "");
 			
 			// append lines with &
 

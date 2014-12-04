@@ -1,10 +1,17 @@
 /* Simple Rudi Program */
 
 
-program
-
+program /*asda*/
+decs
+[
+string hello
+]
 begin
 
-print "Hello World !"
-
+hello = "yo"
+/*Adasd*/ 
+print hello
+print "helloworld"
+printcr
+print "maasdasdasd"
 end
