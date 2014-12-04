@@ -23,7 +23,29 @@ public class RudiExecutor {
 
 			String s = instrList.instruction;
 			choice = getChoice(instrList.instruction);
+			String type="";
+			String answer;
 			switch (choice) {
+			
+			
+			case "assignment":
+				
+				String Parts[]=s.split("=");
+				if(localVariableTypes.containsKey(Parts[0]))
+				 type = localVariableTypes.get(Parts[0]);
+				if(type.equalsIgnoreCase("float"))
+					if(checkFloat(Parts[1]))
+					localVariableValues.put(Parts[0], Parts[1]);
+				else 
+				if(type.equalsIgnoreCase("integer"))
+					if(checkInt(Parts[1]))
+						localVariableValues.put(Parts[0], Parts[1]);
+					else
+					if(type.equalsIgnoreCase("String"))
+						if(checkString(Parts[1])){
+							String disp= getString(Parts[1]);
+							localVariableValues.put(Parts[0],disp);
+						}
 			/*
 			 * keywords
 			 * 
@@ -48,8 +70,8 @@ public class RudiExecutor {
 				String parts[] = s.split("=");
 				// parts[1]=PlaceVariableValues(parts[1], localVariableTypes,
 				// localVariableValues);
-				float answer = EvaluateExpression(parts[1]);
-				AssignAnswer(answer, localVariableTypes, localVariableValues,
+				float ans = EvaluateExpression(parts[1]);
+				AssignAnswer(ans, localVariableTypes, localVariableValues,
 						parts[0]);
 				break;
 
@@ -75,19 +97,37 @@ public class RudiExecutor {
 				s = s.substring(5);
 				if (s.equalsIgnoreCase("cr"))
 					System.out.println("\n");
-				else if (s.charAt(0) == '\"'&& s.charAt(s.length())=='\"')
-					System.out.println(s.substring(1, s.indexOf("\"")));
+				else if (s.charAt(0) == '\"'
+						&& s.charAt(s.length() - 1) == '\"')
+					System.out.println(s.substring(1, s.length() - 2));
 				else if (localVariableValues.containsKey(s))
 					System.out.println(localVariableValues.get(s));
 				else
-					System.out.println("Error in parsing string at "+instrList.lineNo);
+					System.out.println("Error in parsing string at "
+							+ instrList.lineNo);
 				break;
-				
+
 			}
 			instrList = instrList.nextInstruction;
 		}
 		return null;
 	}
+
+	private boolean checkString(String string) {
+		// TODO Auto-generated method stub
+		if(string.charAt(0)=='\"' && string.charAt(string.length()-1)=='\"' )
+		return true;
+		else
+		return false;
+	}
+	
+	private String getString(String string) {
+		// TODO Auto-generated method stub
+		if(checkString(string))
+		return string.substring(1,string.length()-2);
+		else
+		return "Error invalid String";
+		}
 
 	private void AcceptUserInput(String string,
 			Map<String, String> localVariableTypes,
@@ -97,7 +137,7 @@ public class RudiExecutor {
 		Scanner in = new Scanner(new InputStreamReader(System.in));
 		String val = in.nextLine();
 
-		if (type.equalsIgnoreCase("int"))
+		if (type.equalsIgnoreCase("integer"))
 			if (checkInt(val))
 				localVariableValues.put(string, val);
 			else
@@ -124,6 +164,8 @@ public class RudiExecutor {
 			return "print"; // All Print Operations
 		if (s.contains("input"))
 			return "input"; // All User Inputs///
+		if (s.contains("="))
+			return "assignment";
 		return null;
 	}
 
@@ -133,11 +175,9 @@ public class RudiExecutor {
 		// TODO Auto-generated method stub
 		if (localVariableTypes.get(s) == null)
 			System.out.println("Data Assigned to invalid operand");
-		if (localVariableValues.get(s) == null)
-			System.out.println("Data Assigned to invalid operand");
 		if (localVariableTypes.get(s).equalsIgnoreCase("float"))
 			localVariableValues.put(s, (answer + ""));
-		if (localVariableTypes.get(s).equalsIgnoreCase("int")) {
+		if (localVariableTypes.get(s).equalsIgnoreCase("integer")) {
 			int ans = (int) answer;
 			localVariableValues.put(s, (ans + ""));
 		}
@@ -187,7 +227,7 @@ public class RudiExecutor {
 
 		if (RudiExecutor.localVarTypes.containsKey(s))
 			if ((RudiExecutor.localVarTypes.get(s).equalsIgnoreCase("float") || RudiExecutor.localVarTypes
-					.get(s).equalsIgnoreCase("int")))
+					.get(s).equalsIgnoreCase("integer")))
 				return Float.parseFloat(localVarValues.get(s));
 
 		if ((index = (findIndex(s, '-'))) >= 0) {
