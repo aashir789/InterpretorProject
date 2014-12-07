@@ -1,0 +1,10 @@
+/* Simple Rudi Program */
+
+
+program
+
+begin
+
+print "Hello World !" /* Prints Hello World */
+
+end

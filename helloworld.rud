@@ -1,17 +1,21 @@
 /* Simple Rudi Program */
 
 
-program /*asda*/
+program 
 decs
 [
 string hello
+integer a
+integer b 
+integer c
 ]
 begin
 
-hello = "yo"
-/*Adasd*/ 
+hello = "Hello World!" 
+a = 10
+b = 400
+c = a + b
+
 print hello
-print "helloworld"
-printcr
-print "maasdasdasd"
+print c 
 end

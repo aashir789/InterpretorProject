@@ -321,7 +321,7 @@ public class SourceParser {
 	
 	public static void main(String[] args) throws IOException {
 
-		SourceParser sp = new SourceParser("helloworld.rud");
+		SourceParser sp = new SourceParser(args[0]);
 
 		sp.init();
 		sp.readFromFile();
