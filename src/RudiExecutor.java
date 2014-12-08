@@ -23,48 +23,49 @@ public class RudiExecutor {
 
 			String s = instrList.instruction;
 			choice = getChoice(instrList.instruction);
-			String type="";
+			String type = "";
 			String answer;
 			switch (choice) {
-			
-			
+
 			case "assignment":
-				
-				String Parts[]=s.split("=");
-				if(localVariableTypes.containsKey(Parts[0]))
-				 type = localVariableTypes.get(Parts[0]);
-				if(type.equalsIgnoreCase("float"))
-					if(checkFloat(Parts[1]))
-					localVariableValues.put(Parts[0], Parts[1]);
-				else 
-				if(type.equalsIgnoreCase("integer"))
-					if(checkInt(Parts[1]))
+
+				String Parts[] = s.split("=");
+				if (localVariableTypes.containsKey(Parts[0]))
+					type = localVariableTypes.get(Parts[0]);
+				if (type.equalsIgnoreCase("float"))
+					if (checkFloat(Parts[1]))
 						localVariableValues.put(Parts[0], Parts[1]);
-					else
-					if(type.equalsIgnoreCase("String"))
-						if(checkString(Parts[1])){
-							String disp= getString(Parts[1]);
-							localVariableValues.put(Parts[0],disp);
-						}
-			/*
-			 * keywords
-			 * 
-			 * program/end/decs/begin/stop
-			 * 
-			 * control
-			 * 
-			 * if(boolean)then[...]
-			 * 
-			 * if(boolean)then[...]else[...]
-			 * 
-			 * while(Boolean)[...]
-			 */
+					else if (type.equalsIgnoreCase("integer"))
+						if (checkInt(Parts[1]))
+							localVariableValues.put(Parts[0], Parts[1]);
+						else if (type.equalsIgnoreCase("String"))
+							if (checkString(Parts[1])) {
+								String disp = getString(Parts[1]);
+								localVariableValues.put(Parts[0], disp);
+							}
+				/*
+				 * keywords
+				 * 
+				 * program/end/decs/begin/stop
+				 * 
+				 * control
+				 * 
+				 * 
+				 * 
+				 * while(Boolean)[...]
+				 */
 
-			// Boolean ^,|,~
+				// Boolean ^,|,~
 
-			/*
-			 * Arithmetic =,+,-,/,*
-			 */
+				/*
+				 * Arithmetic =,+,-,/,*
+				 */
+
+				/*
+				 * if(boolean)then[...]
+				 * 
+				 * if(boolean)then[...]else[...]
+				 */
 
 			case "Arith":
 				String parts[] = s.split("=");
@@ -115,19 +116,20 @@ public class RudiExecutor {
 
 	private boolean checkString(String string) {
 		// TODO Auto-generated method stub
-		if(string.charAt(0)=='\"' && string.charAt(string.length()-1)=='\"' )
-		return true;
+		if (string.charAt(0) == '\"'
+				&& string.charAt(string.length() - 1) == '\"')
+			return true;
 		else
-		return false;
+			return false;
 	}
-	
+
 	private String getString(String string) {
 		// TODO Auto-generated method stub
-		if(checkString(string))
-		return string.substring(1,string.length()-2);
+		if (checkString(string))
+			return string.substring(1, string.length() - 2);
 		else
-		return "Error invalid String";
-		}
+			return "Error invalid String";
+	}
 
 	private void AcceptUserInput(String string,
 			Map<String, String> localVariableTypes,
@@ -173,10 +175,13 @@ public class RudiExecutor {
 			Map<String, String> localVariableTypes,
 			Map<String, String> localVariableValues, String s) {
 		// TODO Auto-generated method stub
+		
 		if (localVariableTypes.get(s) == null)
 			System.out.println("Data Assigned to invalid operand");
+
 		if (localVariableTypes.get(s).equalsIgnoreCase("float"))
 			localVariableValues.put(s, (answer + ""));
+		
 		if (localVariableTypes.get(s).equalsIgnoreCase("integer")) {
 			int ans = (int) answer;
 			localVariableValues.put(s, (ans + ""));
