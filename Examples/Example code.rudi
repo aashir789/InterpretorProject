@@ -1,0 +1,99 @@
+/*----------------------------   CUT HERE --------------------------------------*/
+/* ----------------- This will represent the easiest example ------------------- */
+/* Hello world */
+program
+begin
+	print "Hello world"
+end
+
+
+/*----------------------------   CUT HERE --------------------------------------*/
+/* ----------------- This will represent the next easiest example ------------------- */
+/* Hello world */
+program
+decs [
+	string name
+]
+begin
+	print "Enter your name:"
+	input name
+	print "Hello"
+	print name
+end
+
+
+/*----------------------------   CUT HERE --------------------------------------*/
+/* ----------------- This will represent the second most complicated example ------------------- */
+/* Factorial Calculator */
+program
+decs [
+	integer fact		/* factorial result 			*/
+	integer x		/* intermediate factorial value 	*/
+	integer n		/* input factorial term		*/
+]	
+begin
+	print “Enter the factorial term:”
+	input n
+
+	if ( n :eq: 0 ) then
+	[
+		fact = 1
+	]
+	else
+	[	
+		x = 1
+		fact = 1
+		while (n :le: x)
+		[	
+			x = x + 1
+			fact = fact * x
+		]
+	]	
+	print n
+	print “! = “
+	print fact
+end
+
+/*----------------------------   CUT HERE --------------------------------------*/
+/* ----------------- This will represent the most complicated example ------------------- */
+/* Factorial Calculator */
+program
+decs [
+	integer fact		/* factorial result 			*/
+	integer n		/* input factorial term		*/
+]	
+begin
+	print “Enter the factorial term:”
+	input n
+	print n
+	print “! = “
+	fact = n
+	factorial ( fact ) 
+	print fact
+end
+
+subroutine factorial ( fact )
+decs [
+	integer temp
+]
+
+begin
+	/* Safety check to make sure value is > 0 */
+	if ( fact :lt: 0 ) then
+	[
+		fact = fact * -1
+	]
+	
+	/* Set local value to temp and then use recursion to generate factorial */
+	temp = fact
+	if ( fact :eq: 0 ) then 
+	[
+		fact = 1
+	]
+	else
+	[
+		temp = n - 1
+		factorial ( temp )
+		n = n * temp
+	]
+return

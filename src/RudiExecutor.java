@@ -108,26 +108,113 @@ public class RudiExecutor {
 
 				while (true) {
 					if (execWhileCondition(s) == true) {
+
+						// list to store instructions inside if block
 						InstructionList whileList = new InstructionList();
-						
-						if(!instrList.nextInstruction.instruction.equalsIgnoreCase("[")){
+						if (!instrList.nextInstruction.instruction
+								.equalsIgnoreCase("[")) {
 							// Syntax error
 						}
-						
+
 						InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
-						while(!currentInstr.instruction.equalsIgnoreCase("]")){
-							whileList.addInstruction(currentInstr.instruction, currentInstr.lineNo);
+						while (!currentInstr.instruction.equalsIgnoreCase("]")) {
+							whileList.addInstruction(currentInstr.instruction,
+									currentInstr.lineNo);
 							currentInstr = currentInstr.nextInstruction;
 						}
-						execute(localVariableTypes,localVariableValues, whileList);
+						execute(localVariableTypes, localVariableValues,
+								whileList);
+
+						// currentInstr = ]
 						instrList = currentInstr;
-						
+
 					} else {
 						break;
 					}
 				}
 
 				break;
+
+			case "if":
+
+				if (execIfCondition(s)) {
+
+					// list to store instructions inside if block
+					InstructionList ifList = new InstructionList();
+					InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
+
+					if (!currentInstr.instruction.equals("[")) {
+						// Syntax error
+					}
+
+					currentInstr = currentInstr.nextInstruction;
+
+					while (!currentInstr.instruction.equals("]")) {
+						ifList.addInstruction(currentInstr.instruction,
+								currentInstr.lineNo);
+						currentInstr = currentInstr.nextInstruction;
+					}
+					execute(localVariableTypes, localVariableValues, ifList);
+
+					// skip all else statements
+					while (true) {
+						currentInstr = currentInstr.nextInstruction;
+						if (currentInstr.instruction.equalsIgnoreCase("else")
+								|| currentInstr.instruction
+										.equalsIgnoreCase("else if")) {
+							while (currentInstr.instruction.equals("]")) {
+								currentInstr = currentInstr.nextInstruction;
+							}
+						} else {
+							break;
+						}
+					}
+
+					// currentInstr = the one after last ]
+				} else {
+					// if condition is not true, look for else
+					InstructionList elseList = new InstructionList();
+					InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
+
+					if (!currentInstr.instruction.equals("[")) {
+						// Syntax error
+					}
+					currentInstr = currentInstr.nextInstruction;
+					while (!currentInstr.instruction.equals("]")) {
+						currentInstr = currentInstr.nextInstruction;
+					}
+					// if block skipped , currentInsr = "]"
+
+					if (currentInstr.nextInstruction.instruction
+							.equalsIgnoreCase("else")) {
+
+						currentInstr = currentInstr.nextInstruction;
+						if (!currentInstr.instruction.equals("[")) {
+							// Syntax error
+						}
+
+						while (!currentInstr.instruction.equals("]")) {
+							elseList.addInstruction(currentInstr.instruction,
+									currentInstr.lineNo);
+							currentInstr = currentInstr.nextInstruction;
+						}
+
+						execute(localVariableTypes, localVariableValues,
+								elseList);
+
+						// currentInstr = ]
+
+						instrList = currentInstr;
+						break;
+
+					} else {
+						instrList = currentInstr;
+						break;
+					}
+
+				}
+				break;
+
 			default:
 				// Syntax error
 				break;
@@ -179,9 +266,11 @@ public class RudiExecutor {
 
 	private String getChoice(String s) {
 		// TODO Auto-generated method stub
-		
-		if(s.startsWith("while"))
+
+		if (s.startsWith("while"))
 			return "while";
+		if (s.startsWith("if"))
+			return "if";
 		if (s.contains("+") || s.contains("-") || s.contains("/")
 				|| s.contains("*"))
 			return "Arith";// All Arithmetic operations grouped in one case:
@@ -196,8 +285,8 @@ public class RudiExecutor {
 		if (s.contains("="))
 			return "assignment";
 		else
-			//syntax error
-		return null;
+			// syntax error
+			return null;
 	}
 
 	private void AssignAnswer(float answer,
@@ -349,21 +438,19 @@ public class RudiExecutor {
 		} else
 			return false;
 	}
-	
-	private boolean	execWhileCondition(String s) {
-		
-		s=s.substring(6); // removes the while
-		s.substring(0,s.length()-2);
+
+	private boolean execWhileCondition(String s) {
+
+		s = s.substring(6); // removes the while
+		s.substring(0, s.length() - 2);
 		return EvaluateLogicalExpression(s);
 	}
-	
-	
-	private boolean execIfCondition(String s){
-		s=s.substring(3); // removes the while
-		s.substring(0,s.length()-2);
+
+	private boolean execIfCondition(String s) {
+		s = s.substring(3); // removes the while
+		s.substring(0, s.length() - 2);
 		return EvaluateLogicalExpression(s);
 	}
-	
 
 	public static void main(String args[]) {
 		String s = "(1-2)+3*(4/8)";
