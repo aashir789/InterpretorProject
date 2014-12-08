@@ -1,7 +1,8 @@
 /* ----------------- This will represent the next easiest example ------------------- */
 /* Hello world */
 program
-decs [
+decs 
+[
         string name
 ]
 begin

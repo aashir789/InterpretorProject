@@ -1,0 +1,24 @@
+program
+decs
+[
+integer n
+]
+n=5
+   if ( n :eq: 0 ) then
+        [
+         print "n=0"
+        ]
+        else
+        [
+                x = 1
+                fact = 1
+                while (n :le: x)
+                [
+                        x = x + 1
+                        fact = fact * x
+                ]
+        ]
+        print n
+        print “! = “
+	print fact
+end

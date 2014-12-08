@@ -1,0 +1,13 @@
+program
+decs
+[
+integer a
+]
+begin
+a = 5
+while(a:gt:2)
+[
+a=a-1
+]
+print a
+end

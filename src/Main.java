@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -15,8 +17,13 @@ public class Main {
 			if(e instanceof SyntaxErrorException){
 				((SyntaxErrorException) e).printMessage();
 			}
+			else if (e instanceof FileNotFoundException){
+				System.out.println("Source file not found");
+				
+			}
 			else{
-				// another error
+				e.getMessage();
+				e.printStackTrace();
 			}
 			
 		}

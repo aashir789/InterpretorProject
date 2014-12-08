@@ -1,12 +1,13 @@
 /* Factorial Calculator */
 program
-decs [
+decs 
+[
         integer fact            /* factorial result                     */
         integer x               /* intermediate factorial value         */
         integer n               /* input factorial term         */
 ]
 begin
-        print “Enter the factorial term:”
+        print "Enter the factorial term:"
         input n
 
         if ( n :eq: 0 ) then
@@ -17,13 +18,14 @@ begin
         [
                 x = 1
                 fact = 1
-                while (n :le: x)
+                while (x :le: n)
                 [
+			fact = fact * x
                         x = x + 1
-                        fact = fact * x
+                     
                 ]
-        ]
+        ]	
         print n
-        print “! = “
+        print "! = "
 	print fact
 end

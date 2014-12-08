@@ -1,0 +1,18 @@
+program
+decs
+[
+integer n
+]
+begin
+n=5
+	if ( n :eq: 0 ) then
+        [
+		print "n=0"
+        ]
+        else
+        [
+	        print "n="
+		printcr
+		print n   
+        ]
+end
