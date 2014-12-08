@@ -80,7 +80,7 @@ public class RudiExecutor {
 			case "Logic":
 				s = PlaceVariableValues(s, localVariableTypes,
 						localVariableValues);
-				String result = EvaluateLogicalExpression(s);
+				boolean result = EvaluateLogicalExpression(s);
 				break;
 
 			/*
@@ -103,6 +103,33 @@ public class RudiExecutor {
 				else
 					System.out.println("Error in parsing string at "
 							+ instrList.lineNo);
+				break;
+			case "while":
+
+				while (true) {
+					if (execWhileCondition(s) == true) {
+						InstructionList whileList = new InstructionList();
+						
+						if(!instrList.nextInstruction.instruction.equalsIgnoreCase("[")){
+							// Syntax error
+						}
+						
+						InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
+						while(!currentInstr.instruction.equalsIgnoreCase("]")){
+							whileList.addInstruction(currentInstr.instruction, currentInstr.lineNo);
+							currentInstr = currentInstr.nextInstruction;
+						}
+						execute(localVariableTypes,localVariableValues, whileList);
+						instrList = currentInstr;
+						
+					} else {
+						break;
+					}
+				}
+
+				break;
+			default:
+				// Syntax error
 				break;
 
 			}
@@ -152,6 +179,9 @@ public class RudiExecutor {
 
 	private String getChoice(String s) {
 		// TODO Auto-generated method stub
+		
+		if(s.startsWith("while"))
+			return "while";
 		if (s.contains("+") || s.contains("-") || s.contains("/")
 				|| s.contains("*"))
 			return "Arith";// All Arithmetic operations grouped in one case:
@@ -159,12 +189,14 @@ public class RudiExecutor {
 				|| (s.contains(":lt:")) || (s.contains(":gt:"))
 				|| (s.contains(":ne:")) || (s.contains(":eq:")))
 			return "Logic"; // All Boolean and Logical Operations together
-		if (s.contains("print"))
+		if (s.startsWith("print"))
 			return "print"; // All Print Operations
-		if (s.contains("input"))
+		if (s.startsWith("input"))
 			return "input"; // All User Inputs///
 		if (s.contains("="))
 			return "assignment";
+		else
+			//syntax error
 		return null;
 	}
 
@@ -182,11 +214,11 @@ public class RudiExecutor {
 		}
 	}
 
-	private String EvaluateLogicalExpression(String s) {
+	private boolean EvaluateLogicalExpression(String s) {
 		float val = 0;
 		int index = 0;
 
-		return "false";
+		return false;
 
 	}
 
@@ -220,7 +252,6 @@ public class RudiExecutor {
 
 	private static float EvaluateExpression(String s) {
 
-		// TODO Auto-generated method stub
 		float val = 0;
 		int index = 0;
 
@@ -318,6 +349,21 @@ public class RudiExecutor {
 		} else
 			return false;
 	}
+	
+	private boolean	execWhileCondition(String s) {
+		
+		s=s.substring(6); // removes the while
+		s.substring(0,s.length()-2);
+		return EvaluateLogicalExpression(s);
+	}
+	
+	
+	private boolean execIfCondition(String s){
+		s=s.substring(3); // removes the while
+		s.substring(0,s.length()-2);
+		return EvaluateLogicalExpression(s);
+	}
+	
 
 	public static void main(String args[]) {
 		String s = "(1-2)+3*(4/8)";
