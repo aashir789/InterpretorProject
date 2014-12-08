@@ -11,11 +11,17 @@ integer c
 ]
 begin
 
-hello = "Hello World!" 
-a = 10
-b = 400
-c = a + b
-
-print hello
-print c 
+hello(a)
+printcr
+print a
 end
+
+
+subroutine hello(sir)
+begin
+
+sir = 10
+
+print "Hello World"
+
+return

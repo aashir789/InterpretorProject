@@ -15,6 +15,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,7 +24,6 @@ import javax.xml.transform.Source;
 
 public class SourceParser {
 
-	
 	// /////////////////////////////////////////////////////////////////
 	// Class fields
 	// /////////////////////////////////////////////////////////////////
@@ -37,11 +38,10 @@ public class SourceParser {
 	private String currentLine;
 
 	private int lineNo;
-	
-	
-	///////////////////////////////////////////////////////////////////
+
+	// /////////////////////////////////////////////////////////////////
 	// Public Methods
-	//////////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////////
 
 	public SourceParser(String filename) {
 
@@ -80,7 +80,7 @@ public class SourceParser {
 
 			// Remove comments
 			currentLine = currentLine.replaceAll("/\\*+\\s*(.*?)\\*+/", "");
-			
+
 			// append lines with &
 
 			if (currentLine.equalsIgnoreCase("")) {
@@ -121,17 +121,27 @@ public class SourceParser {
 
 	}
 
-	
-	public void runProgram() throws SyntaxErrorException{
+	public void runProgram() throws SyntaxErrorException {
+
+		String key;
 		
+
+		Iterator it = this.subroutines.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pairs = (Map.Entry) it.next();
+			key = (String) pairs.getKey();
+			this.subroutines.get(key).setSubroutines(this.subroutines);
+		}
+		
+
 		this.subroutines.get("program").executeInstructionList();
-		
+
 	}
-	
-	///////////////////////////////////////////////////////////////////
+
+	// /////////////////////////////////////////////////////////////////
 	// Private Methods
-	///////////////////////////////////////////////////////////////////
-	
+	// /////////////////////////////////////////////////////////////////
+
 	private void initProgram(String programName, String[] params)
 			throws IOException {
 
@@ -159,13 +169,11 @@ public class SourceParser {
 			if (currentLine.equalsIgnoreCase("")) {
 				continue;
 			}
-			
+
 			// Remove comments
 			currentLine = currentLine.replaceAll("/\\*+\\s*(.*?)\\*+/", "");
-						
-			// append lines with &
 
-			
+			// append lines with &
 
 			if (currentLine.equalsIgnoreCase("decs")) {
 
@@ -176,6 +184,7 @@ public class SourceParser {
 			} else if (currentLine.equalsIgnoreCase("begin")) {
 
 				linkInstructions(prog);
+				return;
 			} else {
 
 				// Error in syntax
@@ -191,7 +200,7 @@ public class SourceParser {
 
 		// Local Variables
 		boolean decsOpened = false;
-		
+
 		while ((currentLine = br.readLine()) != null) {
 
 			lineNo++;
@@ -199,78 +208,66 @@ public class SourceParser {
 			// Remove white spaces
 			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
 			currentLine = currentLine.replaceAll(regex, "");
-			
+
 			// Remove comments
 			currentLine = currentLine.replaceAll("/\\*+\\s*(.*?)\\*+/", "");
-			
+
 			// append lines with &
 
 			if (currentLine.equalsIgnoreCase("")) {
 				continue;
 			}
-			
-			
+
 			// check if the first character is [
-			
-			if(!decsOpened){
-				
-				if( currentLine.equals("[") ){
+
+			if (!decsOpened) {
+
+				if (currentLine.equals("[")) {
 					lineNo++;
 					decsOpened = true;
 					continue;
-				}
-				else{
+				} else {
 					// Syntax error
 					System.out.println("Syntax Error in declaring variables");
 					return;
 				}
 			}
-			
-			
-			
+
 			// check if the decs block has ended
-			if(currentLine.equals("]")){
+			if (currentLine.equals("]")) {
 				break;
 			}
-			
-			
+
 			// check for the three possible types
-			if(currentLine.toLowerCase().startsWith("string")){
+			if (currentLine.toLowerCase().startsWith("string")) {
 				currentLine = currentLine.substring(6);
-				
-				if(prog.isUniqueVariable(currentLine.toLowerCase())){
-					prog.addToTypeMap(currentLine.toLowerCase(),"string");
-				}
-				else{
+
+				if (prog.isUniqueVariable(currentLine.toLowerCase())) {
+					prog.addToTypeMap(currentLine.toLowerCase(), "string");
+				} else {
 					// throw variable already defined error
 				}
-				
-			}
-			else if(currentLine.toLowerCase().startsWith("integer")){
+
+			} else if (currentLine.toLowerCase().startsWith("integer")) {
 				currentLine = currentLine.substring(7);
-				
-				if(prog.isUniqueVariable(currentLine.toLowerCase())){
-					prog.addToTypeMap(currentLine.toLowerCase(),"integer");
-				}
-				else{
+
+				if (prog.isUniqueVariable(currentLine.toLowerCase())) {
+					prog.addToTypeMap(currentLine.toLowerCase(), "integer");
+				} else {
 					// throw variable already defined error
 				}
-			} 
-			else if(currentLine.toLowerCase().startsWith("float")){
+			} else if (currentLine.toLowerCase().startsWith("float")) {
 				currentLine = currentLine.substring(5);
-				
-				if(prog.isUniqueVariable(currentLine.toLowerCase())){
-					prog.addToTypeMap(currentLine.toLowerCase(),"float");
-				}
-				else{
+
+				if (prog.isUniqueVariable(currentLine.toLowerCase())) {
+					prog.addToTypeMap(currentLine.toLowerCase(), "float");
+				} else {
 					// throw variable already defined error
 				}
-			}
-			else{
+			} else {
 				// syntax error undefined type
-				
+
 			}
-			
 
 		}
 
@@ -282,23 +279,20 @@ public class SourceParser {
 
 			lineNo++;
 
-			
 			String regex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
 			currentLine = currentLine.replaceAll(regex, "");
-			
+
 			// Remove comments
 			currentLine = currentLine.replaceAll("/\\*+\\s*(.*?)\\*+/", "");
-			
+
 			// append lines with &
 
-			
 			if (currentLine.equalsIgnoreCase("")) {
 				continue;
 			}
 
-			
 			// check for if-else and while statements and modify them too
-			
+
 			// check if the subroutine has ended
 			if ((prog.getName().equalsIgnoreCase("program") && currentLine
 					.equalsIgnoreCase("end"))
@@ -312,16 +306,6 @@ public class SourceParser {
 
 		}
 
-	}
-
-	
-	///////////////////////////////////////////////////////////////////
-	// Main function to test the class
-	///////////////////////////////////////////////////////////////////
-	
-	public static void main(String[] args) throws IOException {
-
-	
 	}
 
 }

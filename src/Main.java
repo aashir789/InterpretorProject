@@ -8,10 +8,10 @@ public class Main {
 
 			SourceParser sp = new SourceParser(args[0]);
 
-			sp.init();
+			sp.init();	
 			sp.readFromFile();
 			sp.runProgram();
-		
+	
 		} catch (Exception e) {
 			
 			if(e instanceof SyntaxErrorException){
@@ -22,8 +22,8 @@ public class Main {
 				
 			}
 			else{
-				e.getMessage();
-				e.printStackTrace();
+			//	e.getMessage();
+			//	e.printStackTrace();
 			}
 			
 		}

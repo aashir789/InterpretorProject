@@ -1,22 +1,24 @@
 /* ----------------- This will represent the most complicated example ------------------- */
 /* Factorial Calculator */
 program
-decs [
+decs 
+[
      integer fact            /* factorial result                     */
      integer n               /* input factorial term         */
 ]
 begin
-	print “Enter the factorial term:”
+	print "Enter the factorial term:"
         input n
         print n
-        print “! = “
+        print "! = "
         fact = n
-        factorial ( fact )
-        print fact
+        factorial ( n )
+        print n
 end
 
 subroutine factorial ( fact )
-decs [
+decs 
+[
         integer temp
 ]
 
@@ -28,16 +30,17 @@ begin
 		]
 
         /* Set local value to temp and then use recursion to generate factorial */
-	temp = fact
+	
 	if ( fact :eq: 0 ) then
 	[
 		fact = 1
 		]
         else
-        [
-                temp = n - 1
-                factorial ( temp )
-                n = n * temp
+        [	
+                temp = fact - 1
+                factorial ( temp  )
+                fact = fact * temp
+		
         ]
 return
 	

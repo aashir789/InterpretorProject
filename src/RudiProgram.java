@@ -54,6 +54,7 @@ public class RudiProgram {
 	
 	private String programName;
 	
+    private HashMap<String,RudiProgram> subroutines;
 	////////////////////////////////////////////////////////
 	// Public Methods 
 	///////////////////////////////////////////////////////
@@ -87,17 +88,51 @@ public class RudiProgram {
 		
 	}
 	
+	
+	public HashMap<String, String> getTypeMap(){
+		return this.localVariableTypes;
+	}
+	
+	public void setTypeMap(HashMap<String, String> map){
+		this.localVariableTypes = map;
+	}
+	
+	public HashMap<String, String> getValuesMap(){
+		return this.localVariableValues;
+	}
+	
+	public void setValuesMap(HashMap<String, String> map){
+		this.localVariableValues = map;
+	}
+	
+	public int getNoOfParams(){
+		return this.programParameters.length;
+	}
+	
+	public String[] getParams(){
+		return this.programParameters;
+	}
+	
+	
 	public void setGlobalMaps(HashMap<String,String> globalTypeMap, HashMap<String,String> globalValueMap){
 		
 		this.globalVariableTypes = globalTypeMap;
 		this.globalVariableValues = globalValueMap;
 		
 	}
-	
+
 	public void setInstructionList(InstructionList instructions){
 		
 		this.programInstructionList = instructions;
 		
+	}
+	
+	public InstructionList getInstructionList(){
+		return this.programInstructionList;
+	}
+	
+	public void setParams(String[] params){
+		this.programParameters = params;
 	}
 	
 	public void addToInstructionList(String instr, int lineno){
@@ -108,7 +143,7 @@ public class RudiProgram {
 	
 	public boolean isUniqueVariable(String var){
 		
-		if(this.localVariableTypes.get(var)!= null ){
+		if(this.localVariableTypes.get(var)!= null){
 			return false;
 		}
 		else{
@@ -121,14 +156,30 @@ public class RudiProgram {
 		this.localVariableTypes.put(name, type);
 	}
 	
+	public void addToValueMap(String name,String value){
+		this.localVariableValues.put(name, value);
+	}
+	
 	public void executeInstructionList() throws SyntaxErrorException {
 	
-		RudiExecutor rd=new RudiExecutor();
+		RudiExecutor rd=new RudiExecutor(this.subroutines);
 		String s=rd.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);
 		
 	}
 	
+
+	public HashMap<String,RudiProgram> getSubroutines() {
+		return subroutines;
+	}
 	
+	public String getValMap(String param){
+		
+		return this.localVariableValues.get(param);
+	}
+
+	public void setSubroutines(HashMap<String,RudiProgram> subroutines) {
+		this.subroutines = subroutines;
+	}
 	
 	
 }
