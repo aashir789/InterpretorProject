@@ -7,6 +7,7 @@ public class RudiExecutor {
 	private static Map<String, String> localVarValues;
 	private int bracketStatus = 0;
 
+	
 	public RudiExecutor() {
 
 	}
@@ -54,11 +55,20 @@ public class RudiExecutor {
 
 					break;
 
+				case "subroutine":
+					String val[]=s.split("(");
+					String res="";
+					String params="";
+					String paramarray[];
+					if(localVarTypes.containsKey(val[0]))
+						res=localVariableValues.get(val[0]);
+					params=val[1].split(")")[0];
+					paramarray=params.split(",");
+					
+					
+					
 				case "Arith":
 					String parts[] = s.split("=");
-					// parts[1]=PlaceVariableValues(parts[1],
-					// localVariableTypes,
-					// localVariableValues);
 					float ans = EvaluateExpression(parts[1]);
 					AssignAnswer(ans, parts[0]);
 					break;
@@ -282,14 +292,19 @@ public class RudiExecutor {
 					break;
 
 				default:
-					// Syntax error
-					break;
+					System.out.println("Invalid Instruction");
+					throw new Exception();
 
 				}
 
 			} catch (Exception e) {
 
+
+				System.out.println("Error at line no: " + instrList.lineNo
+						+ "\n" + instrList.instruction);
 				throw new SyntaxErrorException(instrList.instruction, instrList.lineNo) ;
+
+
 			}
 
 			instrList = instrList.nextInstruction;
@@ -316,6 +331,7 @@ public class RudiExecutor {
 		throw new Exception();
 	}
 
+
 	private void AcceptUserInput(String string) throws Exception {
 
 		String type = localVarTypes.get(string);
@@ -336,32 +352,36 @@ public class RudiExecutor {
 			localVarValues.put(string, val);
 	}
 
-	private String getChoice(String s) {
 
-		if (s.startsWith("while"))
+	private String getChoice(String s) throws Exception {
+		
+		if(localVarTypes.containsKey(s.split("(")[0]))
+			return "subroutine";
+		else if (s.startsWith("while"))
 			return "while";
-		if (s.startsWith("if"))
+		else if (s.startsWith("if"))
 			return "if";
-		if (s.contains("+") || s.contains("-") || s.contains("/")
+		else if (s.contains("+") || s.contains("-") || s.contains("/")
 				|| s.contains("*"))
 			return "Arith";// All Arithmetic operations grouped in one case:
-		if ((s.contains(":le:")) || (s.contains(":ge:"))
+		else if ((s.contains(":le:")) || (s.contains(":ge:"))
 				|| (s.contains(":lt:")) || (s.contains(":gt:"))
 				|| (s.contains(":ne:")) || (s.contains(":eq:")))
 			return "Logic"; // All Boolean and Logical Operations together
-		if (s.startsWith("print"))
+		else if (s.startsWith("print"))
 			return "print"; // All Print Operations
-		if (s.startsWith("input"))
+		else if (s.startsWith("input"))
 			return "input"; // All User Inputs///
-		if (s.contains("="))
+		else if (s.contains("="))
 			return "assignment";
 		else
-			// syntax error
-			return null;
+			System.out.println("Invalid Syntax");	// syntax error
+			throw new Exception();
 	}
 
-	private void AssignAnswer(float answer, String s) throws Exception {
 
+	private void AssignAnswer(float answer, String s) throws Exception {
+	
 		if (localVarTypes.get(s) == null) {
 			throw new Exception();
 		} else if (localVarTypes.get(s).equalsIgnoreCase("float")) {
@@ -376,10 +396,11 @@ public class RudiExecutor {
 		float val = 0;
 		int index = 0;
 		String exp = "";
+		
 		s = PlaceVariableValues(s);
-		if (s.contains(":eq:") || s.contains(":ne:") || s.contains(":ne:")
-				|| s.contains(":gt:") || s.contains(":lt:")
-				|| s.contains(":le:") || s.contains(":ge:")) {
+		if (s.contains(":eq:") || s.contains(":ne:") || s.contains(":gt:")
+				|| s.contains(":lt:") || s.contains(":le:")
+				|| s.contains(":ge:")) {
 			if (s.contains(":eq:"))
 				exp = ":eq:";
 			else if (s.contains(":ne:"))
@@ -410,24 +431,18 @@ public class RudiExecutor {
 						return true;
 					break;
 				case ":gt:":
-					if (a > b) {
+					if (a > b)
 						return true;
-					}
 					break;
 				case ":lt:":
-					if (a < b) {
+					if (a < b)
 						return true;
-					}
-					break;
-				case ":ge:":
-					if (a >= b) {
-						return true;
-					}
-					break;
+						break;
 				case ":le:":
 					if (a <= b) {
 						return true;
 					}
+
 					break;
 				}
 			} else
@@ -527,12 +542,10 @@ public class RudiExecutor {
 				s = s.replace(ch, value);
 			}
 		}
-
 		return s;
 	}
 
 	// checks for the string to be an Integer or not
-	@SuppressWarnings("unused")
 	private boolean checkInt(String s) {
 
 		try {
@@ -544,7 +557,6 @@ public class RudiExecutor {
 	}
 
 	// checks for the string to be a Float or not.
-	@SuppressWarnings("unused")
 	private boolean checkFloat(String s) {
 
 		try {
@@ -557,8 +569,6 @@ public class RudiExecutor {
 	}
 
 	// Checks if entered string is either integer or float.
-
-	@SuppressWarnings("unused")
 	private boolean checkIntegerOrFloat(String s) {
 		if (checkFloat(s)) {
 			return true;
@@ -580,13 +590,6 @@ public class RudiExecutor {
 		s = s.substring(3); // removes the while
 		s = s.substring(0, s.length() - 1);
 		return EvaluateLogicalExpression(s);
-	}
-
-	public static void main(String args[]) {
-		String s = "(1-2)+3*(4/8)";
-		Float result = 0f;
-		result = EvaluateExpression(s);
-		System.out.println("Answer is: " + result);
 	}
 
 }
