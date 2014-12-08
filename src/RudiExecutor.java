@@ -43,6 +43,11 @@ public class RudiExecutor {
 								String disp = getString(Parts[1]);
 								localVariableValues.put(Parts[0], disp);
 							}
+					break;
+				
+				
+				
+				
 				/*
 				 * keywords
 				 * 
@@ -51,6 +56,9 @@ public class RudiExecutor {
 				 * control
 				 * 
 				 * 
+				 * if(boolean)then[...]
+				 * 
+				 * if(boolean)then[...]else[...]
 				 * 
 				 * while(Boolean)[...]
 				 */
@@ -59,7 +67,7 @@ public class RudiExecutor {
 
 				/*
 				 * Arithmetic =,+,-,/,*
-				 */
+			w
 
 				/*
 				 * if(boolean)then[...]
@@ -83,7 +91,7 @@ public class RudiExecutor {
 			case "Logic":
 				s = PlaceVariableValues(s, localVariableTypes,
 						localVariableValues);
-				String result = EvaluateLogicalExpression(s);
+				boolean result = EvaluateLogicalExpression(s);
 				break;
 
 			/*
@@ -97,15 +105,42 @@ public class RudiExecutor {
 			case "print":
 				s = s.substring(5);
 				if (s.equalsIgnoreCase("cr"))
-					System.out.println("\n");
+					System.out.println();
 				else if (s.charAt(0) == '\"'
 						&& s.charAt(s.length() - 1) == '\"')
-					System.out.println(s.substring(1, s.length() - 2));
+					System.out.println(s.substring(1, s.length() - 1));
 				else if (localVariableValues.containsKey(s))
 					System.out.println(localVariableValues.get(s));
 				else
 					System.out.println("Error in parsing string at "
 							+ instrList.lineNo);
+				break;
+			case "while":
+
+				while (true) {
+					if (execWhileCondition(s) == true) {
+						InstructionList whileList = new InstructionList();
+						
+						if(!instrList.nextInstruction.instruction.equalsIgnoreCase("[")){
+							// Syntax error
+						}
+						
+						InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
+						while(!currentInstr.instruction.equalsIgnoreCase("]")){
+							whileList.addInstruction(currentInstr.instruction, currentInstr.lineNo);
+							currentInstr = currentInstr.nextInstruction;
+						}
+						execute(localVariableTypes,localVariableValues, whileList);
+						instrList = currentInstr;
+						
+					} else {
+						break;
+					}
+				}
+
+				break;
+			default:
+				// Syntax error
 				break;
 
 			}
@@ -127,7 +162,7 @@ public class RudiExecutor {
 		// TODO Auto-generated method stub
 		if (checkString(string))
 			return string.substring(1, string.length() - 2);
-		else
+
 			return "Error invalid String";
 	}
 
@@ -155,6 +190,9 @@ public class RudiExecutor {
 
 	private String getChoice(String s) {
 		// TODO Auto-generated method stub
+		
+		if(s.startsWith("while"))
+			return "while";
 		if (s.contains("+") || s.contains("-") || s.contains("/")
 				|| s.contains("*"))
 			return "Arith";// All Arithmetic operations grouped in one case:
@@ -162,12 +200,14 @@ public class RudiExecutor {
 				|| (s.contains(":lt:")) || (s.contains(":gt:"))
 				|| (s.contains(":ne:")) || (s.contains(":eq:")))
 			return "Logic"; // All Boolean and Logical Operations together
-		if (s.contains("print"))
+		if (s.startsWith("print"))
 			return "print"; // All Print Operations
-		if (s.contains("input"))
+		if (s.startsWith("input"))
 			return "input"; // All User Inputs///
 		if (s.contains("="))
 			return "assignment";
+		else
+			//syntax error
 		return null;
 	}
 
@@ -188,12 +228,70 @@ public class RudiExecutor {
 		}
 	}
 
-	private String EvaluateLogicalExpression(String s) {
+	private boolean EvaluateLogicalExpression(String s) {
 		float val = 0;
 		int index = 0;
+		String exp="";
+		s=PlaceVariableValues(s, localVarTypes, localVarValues);
+		if(s.contains(":eq:")||s.contains(":ne:")||s.contains(":ne:")||s.contains(":gt:")||s.contains(":lt:")||s.contains(":le:")||s.contains(":ge:")){
+			if(s.contains(":eq:"))
+				exp=":eq:";
+			if(s.contains(":ne:"))
+				exp=":ne:";
+			if(s.contains(":ge:"))
+				exp=":ge:";
+			if(s.contains(":lt:"))
+				exp=":lt:";
+			if(s.contains(":gt:"))
+				exp=":gt:";
+			if(s.contains(":le:"))
+				exp=":le:";
+			else
+			System.out.println("Invalid Expression");
+			
+			
+			String parts[]=s.split(exp);
+			if(checkparts(parts,exp)){
+				float a= Float.parseFloat(parts[0]);
+				float b= Float.parseFloat(parts[1]);
+				switch (exp){
+			
+				case ":eq:":
+				if(a==b)
+					return true;
+					break;
+				case ":ne:":
+				if(a!=b)
+					return true;
+				break;
+				case ":gt:":
+				if(a>b)
+					if(a>b)
+					return true;
+				case ":lt:":
+				if(a<b)
+					if(a<b)
+					return true;
+				case ":ge:":
+				if(a>=b)
+					return true;
+				case "le:":
+				if(a<=b)
+					return false;
+					break;
+				}	
+			}else
+				System.out.println("Incompatible parts");
+			}
+		return false;
+	}
 
-		return "false";
-
+	private boolean checkparts(String[] parts, String exp) {
+		// TODO Auto-generated method stub
+		if(checkIntegerOrFloat(parts[0]))
+			if(checkIntegerOrFloat(parts[1]))
+				return true;
+		return false;
 	}
 
 	// 1-2+3*4/6
@@ -226,7 +324,6 @@ public class RudiExecutor {
 
 	private static float EvaluateExpression(String s) {
 
-		// TODO Auto-generated method stub
 		float val = 0;
 		int index = 0;
 
@@ -324,6 +421,21 @@ public class RudiExecutor {
 		} else
 			return false;
 	}
+	
+	private boolean	execWhileCondition(String s) {
+		
+		s=s.substring(6); // removes the while
+		s.substring(0,s.length()-2);
+		return EvaluateLogicalExpression(s);
+	}
+	
+	
+	private boolean execIfCondition(String s){
+		s=s.substring(3); // removes the while
+		s.substring(0,s.length()-2);
+		return EvaluateLogicalExpression(s);
+	}
+	
 
 	public static void main(String args[]) {
 		String s = "(1-2)+3*(4/8)";

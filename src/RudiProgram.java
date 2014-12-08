@@ -109,10 +109,10 @@ public class RudiProgram {
 	public boolean isUniqueVariable(String var){
 		
 		if(this.localVariableTypes.get(var)!= null ){
-			return true;
+			return false;
 		}
 		else{
-			return false;
+			return true;
 		}
 	}
 	

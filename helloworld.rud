@@ -1,10 +1,21 @@
 /* Simple Rudi Program */
 
 
-program
-
+program 
+decs
+[
+string hello
+integer a
+integer b 
+integer c
+]
 begin
 
-print "Hello World !"
+hello = "Hello World!" 
+a = 10
+b = 400
+c = a + b
 
+print hello
+print c 
 end
