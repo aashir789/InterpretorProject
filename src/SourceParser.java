@@ -122,7 +122,7 @@ public class SourceParser {
 	}
 
 	
-	public void runProgram(){
+	public void runProgram() throws SyntaxErrorException{
 		
 		this.subroutines.get("program").executeInstructionList();
 		
@@ -321,12 +321,7 @@ public class SourceParser {
 	
 	public static void main(String[] args) throws IOException {
 
-		SourceParser sp = new SourceParser(args[0]);
-
-		sp.init();
-		sp.readFromFile();
-		sp.runProgram();
-
+	
 	}
 
 }

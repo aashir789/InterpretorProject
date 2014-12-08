@@ -121,7 +121,7 @@ public class RudiProgram {
 		this.localVariableTypes.put(name, type);
 	}
 	
-	public void executeInstructionList(){
+	public void executeInstructionList() throws SyntaxErrorException {
 	
 		RudiExecutor rd=new RudiExecutor();
 		String s=rd.execute(this.localVariableTypes,this.localVariableValues,this.programInstructionList);

@@ -11,7 +11,9 @@ public class RudiExecutor {
 	}
 
 	public String execute(Map<String, String> localVariableTypes,
-			Map<String, String> localVariableValues, InstructionList inList) {
+			Map<String, String> localVariableValues, InstructionList inList)
+			throws SyntaxErrorException {
+
 		localVarTypes = localVariableTypes;
 		localVarValues = localVariableValues;
 
@@ -19,35 +21,33 @@ public class RudiExecutor {
 		boolean bool = false;
 
 		InstructionList.InstructionNode instrList = inList.listHead;
+
 		while (instrList != null) {
+			try {
+				String s = instrList.instruction;
+				choice = getChoice(instrList.instruction);
+				String type = "";
+				String answer;
+				switch (choice) {
 
-			String s = instrList.instruction;
-			choice = getChoice(instrList.instruction);
-			String type = "";
-			String answer;
-			switch (choice) {
+				case "assignment":
 
-			case "assignment":
-
-				String Parts[] = s.split("=");
-				if (localVariableTypes.containsKey(Parts[0]))
-					type = localVariableTypes.get(Parts[0]);
-				if (type.equalsIgnoreCase("float"))
-					if (checkFloat(Parts[1]))
-						localVariableValues.put(Parts[0], Parts[1]);
-					else if (type.equalsIgnoreCase("integer"))
-						if (checkInt(Parts[1]))
+					String Parts[] = s.split("=");
+					if (localVariableTypes.containsKey(Parts[0]))
+						type = localVariableTypes.get(Parts[0]);
+					if (type.equalsIgnoreCase("float"))
+						if (checkFloat(Parts[1]))
 							localVariableValues.put(Parts[0], Parts[1]);
-						else if (type.equalsIgnoreCase("String"))
-							if (checkString(Parts[1])) {
-								String disp = getString(Parts[1]);
-								localVariableValues.put(Parts[0], disp);
-							}
+						else if (type.equalsIgnoreCase("integer"))
+							if (checkInt(Parts[1]))
+								localVariableValues.put(Parts[0], Parts[1]);
+							else if (type.equalsIgnoreCase("String"))
+								if (checkString(Parts[1])) {
+									String disp = getString(Parts[1]);
+									localVariableValues.put(Parts[0], disp);
+								}
 					break;
-				
-				
-				
-				
+
 				/*
 				 * keywords
 				 * 
@@ -66,173 +66,186 @@ public class RudiExecutor {
 				// Boolean ^,|,~
 
 				/*
-				 * Arithmetic =,+,-,/,*
-			w
-
-				/*
-				 * if(boolean)then[...]
+				 * Arithmetic =,+,-,/,* w
+				 * 
+				 * /* if(boolean)then[...]
 				 * 
 				 * if(boolean)then[...]else[...]
 				 */
 
-			case "Arith":
-				String parts[] = s.split("=");
-				// parts[1]=PlaceVariableValues(parts[1], localVariableTypes,
-				// localVariableValues);
-				float ans = EvaluateExpression(parts[1]);
-				AssignAnswer(ans, localVariableTypes, localVariableValues,
-						parts[0]);
-				break;
+				case "Arith":
+					String parts[] = s.split("=");
+					// parts[1]=PlaceVariableValues(parts[1],
+					// localVariableTypes,
+					// localVariableValues);
+					float ans = EvaluateExpression(parts[1]);
+					AssignAnswer(ans, localVariableTypes, localVariableValues,
+							parts[0]);
+					break;
 
-			/*
-			 * Comparison :eq:,:ne:,:gt:,:lt:,:ge:,:le:
-			 */
+				/*
+				 * Comparison :eq:,:ne:,:gt:,:lt:,:ge:,:le:
+				 */
 
-			case "Logic":
-				s = PlaceVariableValues(s, localVariableTypes,
-						localVariableValues);
-				boolean result = EvaluateLogicalExpression(s);
-				break;
+				case "Logic":
+					s = PlaceVariableValues(s, localVariableTypes,
+							localVariableValues);
+					boolean result = EvaluateLogicalExpression(s);
+					break;
 
-			/*
-			 * input variable
-			 */
-			case "input":
-				s = s.substring(5);
-				AcceptUserInput(s, localVariableTypes, localVariableValues);
-				break;
+				/*
+				 * input variable
+				 */
+				case "input":
+					s = s.substring(5);
+					AcceptUserInput(s, localVariableTypes, localVariableValues);
+					break;
 
-			case "print":
-				s = s.substring(5);
-				if (s.equalsIgnoreCase("cr"))
-					System.out.println();
-				else if (s.charAt(0) == '\"'
-						&& s.charAt(s.length() - 1) == '\"')
-					System.out.println(s.substring(1, s.length() - 1));
-				else if (localVariableValues.containsKey(s))
-					System.out.println(localVariableValues.get(s));
-				else
-					System.out.println("Error in parsing string at "
-							+ instrList.lineNo);
-				break;
-			case "while":
+				case "print":
+					s = s.substring(5);
+					if (s.equalsIgnoreCase("cr"))
+						System.out.println();
+					else if (s.charAt(0) == '\"'
+							&& s.charAt(s.length() - 1) == '\"')
+						System.out.println(s.substring(1, s.length() - 1));
+					else if (localVariableValues.containsKey(s))
+						System.out.println(localVariableValues.get(s));
+					else
+						System.out.println("Error in parsing string at "
+								+ instrList.lineNo);
+					break;
+				case "while":
 
-				while (true) {
-					if (execWhileCondition(s) == true) {
-
-						// list to store instructions inside if block
-						InstructionList whileList = new InstructionList();
-						if (!instrList.nextInstruction.instruction
-								.equalsIgnoreCase("[")) {
-							// Syntax error
-						}
-
-						InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
-						while (!currentInstr.instruction.equalsIgnoreCase("]")) {
-							whileList.addInstruction(currentInstr.instruction,
-									currentInstr.lineNo);
-							currentInstr = currentInstr.nextInstruction;
-						}
-						execute(localVariableTypes, localVariableValues,
-								whileList);
-
-						// currentInstr = ]
-						instrList = currentInstr;
-
-					} else {
-						break;
-					}
-				}
-
-				break;
-
-			case "if":
-
-				if (execIfCondition(s)) {
-
-					// list to store instructions inside if block
-					InstructionList ifList = new InstructionList();
-					InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
-
-					if (!currentInstr.instruction.equals("[")) {
-						// Syntax error
-					}
-
-					currentInstr = currentInstr.nextInstruction;
-
-					while (!currentInstr.instruction.equals("]")) {
-						ifList.addInstruction(currentInstr.instruction,
-								currentInstr.lineNo);
-						currentInstr = currentInstr.nextInstruction;
-					}
-					execute(localVariableTypes, localVariableValues, ifList);
-
-					// skip all else statements
 					while (true) {
-						currentInstr = currentInstr.nextInstruction;
-						if (currentInstr.instruction.equalsIgnoreCase("else")
-								|| currentInstr.instruction
-										.equalsIgnoreCase("else if")) {
-							while (currentInstr.instruction.equals("]")) {
+						if (execWhileCondition(s) == true) {
+
+							// list to store instructions inside if block
+							InstructionList whileList = new InstructionList();
+							if (!instrList.nextInstruction.instruction
+									.equalsIgnoreCase("[")) {
+								// Syntax error
+							}
+
+							InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
+							while (!currentInstr.instruction
+									.equalsIgnoreCase("]")) {
+								whileList.addInstruction(
+										currentInstr.instruction,
+										currentInstr.lineNo);
 								currentInstr = currentInstr.nextInstruction;
 							}
+							execute(localVariableTypes, localVariableValues,
+									whileList);
+
+							// currentInstr = ]
+							instrList = currentInstr;
+
 						} else {
 							break;
 						}
 					}
 
-					// currentInstr = the one after last ]
-				} else {
-					// if condition is not true, look for else
-					InstructionList elseList = new InstructionList();
-					InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
+					break;
 
-					if (!currentInstr.instruction.equals("[")) {
-						// Syntax error
-					}
-					currentInstr = currentInstr.nextInstruction;
-					while (!currentInstr.instruction.equals("]")) {
-						currentInstr = currentInstr.nextInstruction;
-					}
-					// if block skipped , currentInsr = "]"
+				case "if":
 
-					if (currentInstr.nextInstruction.instruction
-							.equalsIgnoreCase("else")) {
+					if (execIfCondition(s)) {
 
-						currentInstr = currentInstr.nextInstruction;
+						// list to store instructions inside if block
+						InstructionList ifList = new InstructionList();
+						InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
+
 						if (!currentInstr.instruction.equals("[")) {
 							// Syntax error
 						}
 
+						currentInstr = currentInstr.nextInstruction;
+
 						while (!currentInstr.instruction.equals("]")) {
-							elseList.addInstruction(currentInstr.instruction,
+							ifList.addInstruction(currentInstr.instruction,
 									currentInstr.lineNo);
 							currentInstr = currentInstr.nextInstruction;
 						}
+						execute(localVariableTypes, localVariableValues, ifList);
 
-						execute(localVariableTypes, localVariableValues,
-								elseList);
+						// skip all else statements
+						while (true) {
+							currentInstr = currentInstr.nextInstruction;
+							if (currentInstr.instruction
+									.equalsIgnoreCase("else")
+									|| currentInstr.instruction
+											.equalsIgnoreCase("else if")) {
+								while (currentInstr.instruction.equals("]")) {
+									currentInstr = currentInstr.nextInstruction;
+								}
+							} else {
+								break;
+							}
+						}
 
-						// currentInstr = ]
-
-						instrList = currentInstr;
-						break;
-
+						// currentInstr = the one after last ]
 					} else {
-						instrList = currentInstr;
-						break;
+						// if condition is not true, look for else
+						InstructionList elseList = new InstructionList();
+						InstructionList.InstructionNode currentInstr = instrList.nextInstruction;
+
+						if (!currentInstr.instruction.equals("[")) {
+							// Syntax error
+						}
+						currentInstr = currentInstr.nextInstruction;
+						while (!currentInstr.instruction.equals("]")) {
+							currentInstr = currentInstr.nextInstruction;
+						}
+						// if block skipped , currentInsr = "]"
+
+						if (currentInstr.nextInstruction.instruction
+								.equalsIgnoreCase("else")) {
+
+							currentInstr = currentInstr.nextInstruction;
+							if (!currentInstr.instruction.equals("[")) {
+								// Syntax error
+							}
+
+							while (!currentInstr.instruction.equals("]")) {
+								elseList.addInstruction(
+										currentInstr.instruction,
+										currentInstr.lineNo);
+								currentInstr = currentInstr.nextInstruction;
+							}
+
+							execute(localVariableTypes, localVariableValues,
+									elseList);
+
+							// currentInstr = ]
+
+							instrList = currentInstr;
+							break;
+
+						} else {
+							instrList = currentInstr;
+							break;
+						}
+
 					}
+					break;
+
+				default:
+					// Syntax error
+					break;
 
 				}
-				break;
 
-			default:
-				// Syntax error
-				break;
+			} catch (Exception e) {
 
+				System.out.println("Error at line no: " + instrList.lineNo
+						+ "\n" + instrList.instruction);
+				throw e;
 			}
+
 			instrList = instrList.nextInstruction;
+
 		}
+
 		return null;
 	}
 
@@ -250,7 +263,7 @@ public class RudiExecutor {
 		if (checkString(string))
 			return string.substring(1, string.length() - 2);
 
-			return "Error invalid String";
+		return "Error invalid String";
 	}
 
 	private void AcceptUserInput(String string,
@@ -304,13 +317,13 @@ public class RudiExecutor {
 			Map<String, String> localVariableTypes,
 			Map<String, String> localVariableValues, String s) {
 		// TODO Auto-generated method stub
-		
+
 		if (localVariableTypes.get(s) == null)
 			System.out.println("Data Assigned to invalid operand");
 
 		if (localVariableTypes.get(s).equalsIgnoreCase("float"))
 			localVariableValues.put(s, (answer + ""));
-		
+
 		if (localVariableTypes.get(s).equalsIgnoreCase("integer")) {
 			int ans = (int) answer;
 			localVariableValues.put(s, (ans + ""));
@@ -320,65 +333,66 @@ public class RudiExecutor {
 	private boolean EvaluateLogicalExpression(String s) {
 		float val = 0;
 		int index = 0;
-		String exp="";
-		s=PlaceVariableValues(s, localVarTypes, localVarValues);
-		if(s.contains(":eq:")||s.contains(":ne:")||s.contains(":ne:")||s.contains(":gt:")||s.contains(":lt:")||s.contains(":le:")||s.contains(":ge:")){
-			if(s.contains(":eq:"))
-				exp=":eq:";
-			if(s.contains(":ne:"))
-				exp=":ne:";
-			if(s.contains(":ge:"))
-				exp=":ge:";
-			if(s.contains(":lt:"))
-				exp=":lt:";
-			if(s.contains(":gt:"))
-				exp=":gt:";
-			if(s.contains(":le:"))
-				exp=":le:";
+		String exp = "";
+		s = PlaceVariableValues(s, localVarTypes, localVarValues);
+		if (s.contains(":eq:") || s.contains(":ne:") || s.contains(":ne:")
+				|| s.contains(":gt:") || s.contains(":lt:")
+				|| s.contains(":le:") || s.contains(":ge:")) {
+			if (s.contains(":eq:"))
+				exp = ":eq:";
+			if (s.contains(":ne:"))
+				exp = ":ne:";
+			if (s.contains(":ge:"))
+				exp = ":ge:";
+			if (s.contains(":lt:"))
+				exp = ":lt:";
+			if (s.contains(":gt:"))
+				exp = ":gt:";
+			if (s.contains(":le:"))
+				exp = ":le:";
 			else
-			System.out.println("Invalid Expression");
-			
-			
-			String parts[]=s.split(exp);
-			if(checkparts(parts,exp)){
-				float a= Float.parseFloat(parts[0]);
-				float b= Float.parseFloat(parts[1]);
-				switch (exp){
-			
+				System.out.println("Invalid Expression");
+
+			String parts[] = s.split(exp);
+			if (checkparts(parts, exp)) {
+				float a = Float.parseFloat(parts[0]);
+				float b = Float.parseFloat(parts[1]);
+				switch (exp) {
+
 				case ":eq:":
-				if(a==b)
-					return true;
+					if (a == b)
+						return true;
 					break;
 				case ":ne:":
-				if(a!=b)
-					return true;
-				break;
-				case ":gt:":
-				if(a>b)
-					if(a>b)
-					return true;
-				case ":lt:":
-				if(a<b)
-					if(a<b)
-					return true;
-				case ":ge:":
-				if(a>=b)
-					return true;
-				case "le:":
-				if(a<=b)
-					return false;
+					if (a != b)
+						return true;
 					break;
-				}	
-			}else
+				case ":gt:":
+					if (a > b)
+						if (a > b)
+							return true;
+				case ":lt:":
+					if (a < b)
+						if (a < b)
+							return true;
+				case ":ge:":
+					if (a >= b)
+						return true;
+				case "le:":
+					if (a <= b)
+						return false;
+					break;
+				}
+			} else
 				System.out.println("Incompatible parts");
-			}
+		}
 		return false;
 	}
 
 	private boolean checkparts(String[] parts, String exp) {
 		// TODO Auto-generated method stub
-		if(checkIntegerOrFloat(parts[0]))
-			if(checkIntegerOrFloat(parts[1]))
+		if (checkIntegerOrFloat(parts[0]))
+			if (checkIntegerOrFloat(parts[1]))
 				return true;
 		return false;
 	}
