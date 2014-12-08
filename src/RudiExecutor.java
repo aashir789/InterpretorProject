@@ -32,24 +32,29 @@ public class RudiExecutor {
 				String Parts[] = s.split("=");
 				if (localVariableTypes.containsKey(Parts[0]))
 					type = localVariableTypes.get(Parts[0]);
-				if (type.equalsIgnoreCase("float")) {
+				if (type.equalsIgnoreCase("float"))
 					if (checkFloat(Parts[1]))
 						localVariableValues.put(Parts[0], Parts[1]);
-				} else if (type.equalsIgnoreCase("integer")) {
-					if (checkInt(Parts[1]))
-						localVariableValues.put(Parts[0], Parts[1]);
-				} else if (type.equalsIgnoreCase("string")) {
-					if (checkString(Parts[1])) {
-						String disp = getString(Parts[1]);
-						localVariableValues.put(Parts[0], disp);
-					}
-				}
+					else if (type.equalsIgnoreCase("integer"))
+						if (checkInt(Parts[1]))
+							localVariableValues.put(Parts[0], Parts[1]);
+						else if (type.equalsIgnoreCase("String"))
+							if (checkString(Parts[1])) {
+								String disp = getString(Parts[1]);
+								localVariableValues.put(Parts[0], disp);
+							}
+					break;
+				
+				
+				
+				
 				/*
 				 * keywords
 				 * 
 				 * program/end/decs/begin/stop
 				 * 
 				 * control
+				 * 
 				 * 
 				 * if(boolean)then[...]
 				 * 
@@ -62,6 +67,12 @@ public class RudiExecutor {
 
 				/*
 				 * Arithmetic =,+,-,/,*
+			w
+
+				/*
+				 * if(boolean)then[...]
+				 * 
+				 * if(boolean)then[...]else[...]
 				 */
 
 			case "Arith":
@@ -237,8 +248,8 @@ public class RudiExecutor {
 	private String getString(String string) {
 		// TODO Auto-generated method stub
 		if (checkString(string))
-			return string.substring(1, string.length() - 1);
-		else
+			return string.substring(1, string.length() - 2);
+
 			return "Error invalid String";
 	}
 
@@ -293,10 +304,13 @@ public class RudiExecutor {
 			Map<String, String> localVariableTypes,
 			Map<String, String> localVariableValues, String s) {
 		// TODO Auto-generated method stub
+		
 		if (localVariableTypes.get(s) == null)
 			System.out.println("Data Assigned to invalid operand");
+
 		if (localVariableTypes.get(s).equalsIgnoreCase("float"))
 			localVariableValues.put(s, (answer + ""));
+		
 		if (localVariableTypes.get(s).equalsIgnoreCase("integer")) {
 			int ans = (int) answer;
 			localVariableValues.put(s, (ans + ""));
@@ -306,9 +320,67 @@ public class RudiExecutor {
 	private boolean EvaluateLogicalExpression(String s) {
 		float val = 0;
 		int index = 0;
-
+		String exp="";
+		s=PlaceVariableValues(s, localVarTypes, localVarValues);
+		if(s.contains(":eq:")||s.contains(":ne:")||s.contains(":ne:")||s.contains(":gt:")||s.contains(":lt:")||s.contains(":le:")||s.contains(":ge:")){
+			if(s.contains(":eq:"))
+				exp=":eq:";
+			if(s.contains(":ne:"))
+				exp=":ne:";
+			if(s.contains(":ge:"))
+				exp=":ge:";
+			if(s.contains(":lt:"))
+				exp=":lt:";
+			if(s.contains(":gt:"))
+				exp=":gt:";
+			if(s.contains(":le:"))
+				exp=":le:";
+			else
+			System.out.println("Invalid Expression");
+			
+			
+			String parts[]=s.split(exp);
+			if(checkparts(parts,exp)){
+				float a= Float.parseFloat(parts[0]);
+				float b= Float.parseFloat(parts[1]);
+				switch (exp){
+			
+				case ":eq:":
+				if(a==b)
+					return true;
+					break;
+				case ":ne:":
+				if(a!=b)
+					return true;
+				break;
+				case ":gt:":
+				if(a>b)
+					if(a>b)
+					return true;
+				case ":lt:":
+				if(a<b)
+					if(a<b)
+					return true;
+				case ":ge:":
+				if(a>=b)
+					return true;
+				case "le:":
+				if(a<=b)
+					return false;
+					break;
+				}	
+			}else
+				System.out.println("Incompatible parts");
+			}
 		return false;
+	}
 
+	private boolean checkparts(String[] parts, String exp) {
+		// TODO Auto-generated method stub
+		if(checkIntegerOrFloat(parts[0]))
+			if(checkIntegerOrFloat(parts[1]))
+				return true;
+		return false;
 	}
 
 	// 1-2+3*4/6
